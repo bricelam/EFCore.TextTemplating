@@ -1,0 +1,27 @@
+﻿<#@ template inherits="MyCodeGeneratorBase" visibility="internal" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore.Design" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore.Metadata" #>
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace <#= Namespace #>
+{
+    public partial class <#= EntityType.Name #>
+    {
+<#
+    foreach (var property in EntityType.GetProperties())
+    {
+#>
+        public <#= Code.Reference(property.ClrType) #> <#= property.Name #> { get; set; }
+<#
+    }
+#>
+    }
+}
+<#+
+    public IEntityType EntityType { get; set; }
+    public string Namespace { get; set; }
+
+    public ICSharpHelper Code { get; set; }
+#>

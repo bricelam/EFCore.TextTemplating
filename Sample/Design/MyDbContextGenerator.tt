@@ -1,0 +1,42 @@
+﻿<#@ template inherits="MyCodeGeneratorBase" visibility="internal" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore.Design" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore.Metadata" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore.Metadata.Internal" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore.Scaffolding" #>
+using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+
+namespace <#= Namespace #>
+{
+	public partial class <#= ContextName #> : DbContext
+	{
+<#
+	foreach (var entityType in Model.GetEntityTypes())
+	{
+#>
+		public virtual DbSet<<#= entityType.Name #>> <#= entityType.Scaffolding().DbSetName #> { get; set; }
+<#
+	}
+#>
+		protected override void OnConfiguring(DbContextOptionsBuilder options)
+		    => options<#= Code.Fragment(ProviderCode.GenerateUseProvider(ConnectionString)) #>;
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+<#
+	// TODO
+#>
+		}
+	}
+}
+<#+
+	public IModel Model { get; set; }
+	public string Namespace { get; set; }
+	public string ContextName { get; set; }
+	public string ConnectionString { get; set; }
+
+	public ICSharpHelper Code { get; set; }
+	public IProviderConfigurationCodeGenerator ProviderCode { get; set; }
+	public IAnnotationCodeGenerator Annotation { get; set; }
+#>
