@@ -1,7 +1,7 @@
 ﻿using System;
-using Sample.Models;
+using EFCore.TextTemplating.Models;
 
-namespace Sample
+namespace EFCore.TextTemplating
 {
     class Program
     {

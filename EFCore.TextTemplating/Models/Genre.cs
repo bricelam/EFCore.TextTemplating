@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Sample.Models
+namespace EFCore.TextTemplating.Models
 {
-    public partial class MediaType
+    public partial class Genre
     {
-        public long MediaTypeId { get; set; }
+        public long GenreId { get; set; }
 
         public string Name { get; set; }
 

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace Sample.Models
+namespace EFCore.TextTemplating.Models
 {
 	public partial class ChinookContext : DbContext
 	{

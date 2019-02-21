@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Sample.Models
+namespace EFCore.TextTemplating.Models
 {
     public partial class InvoiceLine
     {

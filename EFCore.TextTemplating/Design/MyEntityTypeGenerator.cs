@@ -7,7 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace Sample.Design
+namespace EFCore.TextTemplating.Design
 {
     using System.Linq;
     using Microsoft.EntityFrameworkCore;

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Sample.Design
+namespace EFCore.TextTemplating.Design
 {
     class DesignTimeServices : IDesignTimeServices
     {

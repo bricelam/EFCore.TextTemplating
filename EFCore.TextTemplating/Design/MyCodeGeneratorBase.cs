@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace Sample.Design
+namespace EFCore.TextTemplating.Design
 {
     abstract class MyCodeGeneratorBase
     {

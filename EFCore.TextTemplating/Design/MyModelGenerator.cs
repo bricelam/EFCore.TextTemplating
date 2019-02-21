@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 
-namespace Sample.Design
+namespace EFCore.TextTemplating.Design
 {
     class MyModelGenerator : ModelCodeGenerator
     {
