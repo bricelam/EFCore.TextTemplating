@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -14,6 +15,7 @@ namespace Sample.Design
 
         public MyModelGenerator(
             ModelCodeGeneratorDependencies dependencies,
+            // UNDONE: Breaks DI
             //IProviderConfigurationCodeGenerator providerConfigurationCodeGenerator,
             IAnnotationCodeGenerator annotationCodeGenerator,
             ICSharpHelper csharpHelper)
@@ -39,15 +41,19 @@ namespace Sample.Design
 
             var contextGenerator = new MyDbContextGenerator
             {
-                Model = model,
-                Namespace = @namespace,
-                ContextName = contextName,
-                ConnectionString = connectionString,
+                Session = new Dictionary<string, object>
+                {
+                    ["Model"] = model,
+                    ["Namespace"] = @namespace,
+                    ["ContextName"] = contextName,
+                    ["ConnectionString"] = connectionString,
 
-                Code = _csharpHelper,
-                ProviderCode = _providerConfigurationCodeGenerator,
-                Annotation = _annotationCodeGenerator
+                    ["Code"] = _csharpHelper,
+                    ["ProviderCode"] = _providerConfigurationCodeGenerator,
+                    ["Annotation"] = _annotationCodeGenerator
+                }
             };
+            contextGenerator.Initialize();
             var generatedCode = contextGenerator.TransformText();
 
             var dbContextFileName = contextName + ".cs";
@@ -61,11 +67,15 @@ namespace Sample.Design
             {
                 var entityGenerator = new MyEntityTypeGenerator
                 {
-                    EntityType = entityType,
-                    Namespace = @namespace,
+                    Session = new Dictionary<string, object>
+                    {
+                        ["EntityType"] = entityType,
+                        ["Namespace"] = @namespace,
 
-                    Code = _csharpHelper
+                        ["Code"] = _csharpHelper
+                    }
                 };
+                entityGenerator.Initialize();
                 generatedCode = entityGenerator.TransformText();
 
                 resultingFiles.AdditionalFiles.Add(

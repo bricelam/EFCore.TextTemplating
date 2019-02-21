@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
@@ -9,15 +10,14 @@ namespace Sample.Design
         bool _endsWithNewline;
         string _currentIndent = "";
 
+        public virtual IDictionary<string, object> Session { get; set; }
+
         protected StringBuilder GenerationEnvironment { get; set; } = new StringBuilder();
 
         public abstract string TransformText();
 
         //    private global::System.CodeDom.Compiler.CompilerErrorCollection errorsField;
         //    private global::System.Collections.Generic.List<int> indentLengthsField;
-
-
-        //    private global::System.Collections.Generic.IDictionary<string, object> sessionField;
 
         //    public System.CodeDom.Compiler.CompilerErrorCollection Errors
         //    {
@@ -51,17 +51,7 @@ namespace Sample.Design
         //        }
         //    }
 
-        //    public virtual global::System.Collections.Generic.IDictionary<string, object> Session
-        //    {
-        //        get
-        //        {
-        //            return this.sessionField;
-        //        }
-        //        set
-        //        {
-        //            this.sessionField = value;
-        //        }
-        //    }
+
 
         public void Write(string textToAppend)
         {

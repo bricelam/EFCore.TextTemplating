@@ -9,19 +9,19 @@
 // ------------------------------------------------------------------------------
 namespace Sample.Design
 {
+    using System.Linq;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.EntityFrameworkCore.Metadata;
+    using Microsoft.EntityFrameworkCore.Metadata.Internal;
     using System;
     
     /// <summary>
     /// Class to produce the template output
     /// </summary>
-    
-    #line 1 "C:\Users\brice\source\repos\Sample\Sample\Design\MyEntityTypeGenerator.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "16.0.0.0")]
     internal partial class MyEntityTypeGenerator : MyCodeGeneratorBase
     {
-#line hidden
         /// <summary>
         /// Create the template output
         /// </summary>
@@ -29,68 +29,96 @@ namespace Sample.Design
         {
             this.Write("using System;\r\nusing System.Collections.Generic;\r\nusing System.ComponentModel.Dat" +
                     "aAnnotations;\r\n\r\nnamespace ");
-            
-            #line 8 "C:\Users\brice\source\repos\Sample\Sample\Design\MyEntityTypeGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Namespace));
-            
-            #line default
-            #line hidden
             this.Write("\r\n{\r\n    public partial class ");
-            
-            #line 10 "C:\Users\brice\source\repos\Sample\Sample\Design\MyEntityTypeGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(EntityType.Name));
-            
-            #line default
-            #line hidden
             this.Write("\r\n    {\r\n");
-            
-            #line 12 "C:\Users\brice\source\repos\Sample\Sample\Design\MyEntityTypeGenerator.tt"
 
-    foreach (var property in EntityType.GetProperties())
+    foreach (var property in EntityType.GetProperties().OrderBy(p => p.Scaffolding().ColumnOrdinal))
     {
+		if (!property.IsNullable
+			&& (!property.ClrType.IsValueType
+				|| property.ClrType.IsGenericType
+				&& property.ClrType.GetGenericTypeDefinition() == typeof(Nullable<>))
+			&& !property.IsPrimaryKey())
+		{
 
-            
-            #line default
-            #line hidden
+            this.Write("\t\t[Required]\r\n");
+
+		}
+
+		var maxLength = property.GetMaxLength();
+		if (maxLength.HasValue)
+		{
+			if (property.ClrType == typeof(string))
+			{
+
+            this.Write("\t\t[StringLength(");
+            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Literal(maxLength.Value)));
+            this.Write(")]\r\n");
+
+			}
+			else
+			{
+
+            this.Write("\t\t[MaxLength(");
+            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Literal(maxLength.Value)));
+            this.Write(")]\r\n");
+
+			}
+		}
+
             this.Write("        public ");
-            
-            #line 16 "C:\Users\brice\source\repos\Sample\Sample\Design\MyEntityTypeGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Code.Reference(property.ClrType)));
-            
-            #line default
-            #line hidden
             this.Write(" ");
-            
-            #line 16 "C:\Users\brice\source\repos\Sample\Sample\Design\MyEntityTypeGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
-            
-            #line default
-            #line hidden
-            this.Write(" { get; set; }\r\n");
-            
-            #line 17 "C:\Users\brice\source\repos\Sample\Sample\Design\MyEntityTypeGenerator.tt"
+            this.Write(" { get; set; }\r\n\r\n");
 
     }
 
-            
-            #line default
-            #line hidden
+	foreach (var navigation in EntityType.GetNavigations())
+	{
+		var targetTypeName = navigation.GetTargetType().Name;
+
+		if (navigation.IsCollection())
+		{
+
+            this.Write("\t\tpublic virtual ICollection<");
+            this.Write(this.ToStringHelper.ToStringWithCulture(targetTypeName));
+            this.Write("> ");
+            this.Write(this.ToStringHelper.ToStringWithCulture(navigation.Name));
+            this.Write(" { get; } = new HashSet<");
+            this.Write(this.ToStringHelper.ToStringWithCulture(targetTypeName));
+            this.Write(">();\r\n\r\n");
+
+		}
+		else
+		{
+
+            this.Write("\t\tpublic virtual ");
+            this.Write(this.ToStringHelper.ToStringWithCulture(targetTypeName));
+            this.Write(" ");
+            this.Write(this.ToStringHelper.ToStringWithCulture(navigation.Name));
+            this.Write(" { get; set; }\r\n\r\n");
+
+		}
+	}
+
             this.Write("    }\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
-        
-        #line 22 "C:\Users\brice\source\repos\Sample\Sample\Design\MyEntityTypeGenerator.tt"
 
-    public IEntityType EntityType { get; set; }
-    public string Namespace { get; set; }
+	// TODO: Use paramater directives when compatible with .NET Core
+    public IEntityType EntityType { get; private set; }
+    public string Namespace { get; private set; }
+    public ICSharpHelper Code { get; private set; }
 
-    public ICSharpHelper Code { get; set; }
+	public void Initialize()
+	{
+		EntityType = (IEntityType)Session["EntityType"];
+		Namespace = (string)Session["Namespace"];
+		Code = (ICSharpHelper)Session["Code"];
+	}
 
-        
-        #line default
-        #line hidden
     }
-    
-    #line default
-    #line hidden
 }

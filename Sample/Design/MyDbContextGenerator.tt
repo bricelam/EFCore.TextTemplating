@@ -1,4 +1,4 @@
-﻿<#@ template inherits="MyCodeGeneratorBase" visibility="internal" #>
+﻿<#@ template inherits="MyCodeGeneratorBase" visibility="internal" linePragmas="false" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore.Design" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore.Metadata" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore.Metadata.Internal" #>
@@ -19,6 +19,7 @@ namespace <#= Namespace #>
 <#
 	}
 #>
+
 		protected override void OnConfiguring(DbContextOptionsBuilder options)
 		    => options<#= Code.Fragment(ProviderCode.GenerateUseProvider(ConnectionString)) #>;
 
@@ -31,12 +32,23 @@ namespace <#= Namespace #>
 	}
 }
 <#+
-	public IModel Model { get; set; }
-	public string Namespace { get; set; }
-	public string ContextName { get; set; }
-	public string ConnectionString { get; set; }
+	// TODO: Use paramater directives when compatible with .NET Core
+	public IModel Model { get; private set; }
+	public string Namespace { get; private set; }
+	public string ContextName { get; private set; }
+	public string ConnectionString { get; private set; }
+	public ICSharpHelper Code { get; private set; }
+	public IProviderConfigurationCodeGenerator ProviderCode { get; private set; }
+	public IAnnotationCodeGenerator Annotation { get; private set; }
 
-	public ICSharpHelper Code { get; set; }
-	public IProviderConfigurationCodeGenerator ProviderCode { get; set; }
-	public IAnnotationCodeGenerator Annotation { get; set; }
+	public void Initialize()
+	{
+		Model = (IModel)Session["Model"];
+		Namespace = (string)Session["Namespace"];
+		ContextName = (string)Session["ContextName"];
+		ConnectionString = (string)Session["ConnectionString"];
+		Code = (ICSharpHelper)Session["Code"];
+		ProviderCode = (IProviderConfigurationCodeGenerator)Session["ProviderCode"];
+		Annotation = (IAnnotationCodeGenerator)Session["Annotation"];
+	}
 #>

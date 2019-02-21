@@ -1,6 +1,9 @@
-﻿<#@ template inherits="MyCodeGeneratorBase" visibility="internal" #>
+﻿<#@ template inherits="MyCodeGeneratorBase" visibility="internal" linePragmas="false" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore.Design" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore.Metadata" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore.Metadata.Internal" #>
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,18 +13,73 @@ namespace <#= Namespace #>
     public partial class <#= EntityType.Name #>
     {
 <#
-    foreach (var property in EntityType.GetProperties())
+    foreach (var property in EntityType.GetProperties().OrderBy(p => p.Scaffolding().ColumnOrdinal))
     {
+		if (!property.IsNullable
+			&& (!property.ClrType.IsValueType
+				|| property.ClrType.IsGenericType
+				&& property.ClrType.GetGenericTypeDefinition() == typeof(Nullable<>))
+			&& !property.IsPrimaryKey())
+		{
+#>
+		[Required]
+<#
+		}
+
+		var maxLength = property.GetMaxLength();
+		if (maxLength.HasValue)
+		{
+			if (property.ClrType == typeof(string))
+			{
+#>
+		[StringLength(<#= Code.Literal(maxLength.Value) #>)]
+<#
+			}
+			else
+			{
+#>
+		[MaxLength(<#= Code.Literal(maxLength.Value) #>)]
+<#
+			}
+		}
 #>
         public <#= Code.Reference(property.ClrType) #> <#= property.Name #> { get; set; }
+
 <#
     }
+
+	foreach (var navigation in EntityType.GetNavigations())
+	{
+		var targetTypeName = navigation.GetTargetType().Name;
+
+		if (navigation.IsCollection())
+		{
+#>
+		public virtual ICollection<<#= targetTypeName #>> <#= navigation.Name #> { get; } = new HashSet<<#= targetTypeName #>>();
+
+<#
+		}
+		else
+		{
+#>
+		public virtual <#= targetTypeName #> <#= navigation.Name #> { get; set; }
+
+<#
+		}
+	}
 #>
     }
 }
 <#+
-    public IEntityType EntityType { get; set; }
-    public string Namespace { get; set; }
+	// TODO: Use paramater directives when compatible with .NET Core
+    public IEntityType EntityType { get; private set; }
+    public string Namespace { get; private set; }
+    public ICSharpHelper Code { get; private set; }
 
-    public ICSharpHelper Code { get; set; }
+	public void Initialize()
+	{
+		EntityType = (IEntityType)Session["EntityType"];
+		Namespace = (string)Session["Namespace"];
+		Code = (ICSharpHelper)Session["Code"];
+	}
 #>

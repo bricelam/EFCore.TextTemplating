@@ -17,6 +17,7 @@ namespace Sample.Models
 		public virtual DbSet<Playlist> Playlist { get; set; }
 		public virtual DbSet<PlaylistTrack> PlaylistTrack { get; set; }
 		public virtual DbSet<Track> Track { get; set; }
+
 		protected override void OnConfiguring(DbContextOptionsBuilder options)
 		    => options.UseSqlite("Data Source=Chinook.db");
 

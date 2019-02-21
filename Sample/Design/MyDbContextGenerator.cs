@@ -18,12 +18,9 @@ namespace Sample.Design
     /// <summary>
     /// Class to produce the template output
     /// </summary>
-    
-    #line 1 "C:\Users\brice\source\repos\Sample\Sample\Design\MyDbContextGenerator.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "16.0.0.0")]
     internal partial class MyDbContextGenerator : MyCodeGeneratorBase
     {
-#line hidden
         /// <summary>
         /// Create the template output
         /// </summary>
@@ -31,89 +28,52 @@ namespace Sample.Design
         {
             this.Write("using System;\r\nusing Microsoft.EntityFrameworkCore;\r\nusing Microsoft.EntityFramew" +
                     "orkCore.Metadata;\r\n\r\nnamespace ");
-            
-            #line 10 "C:\Users\brice\source\repos\Sample\Sample\Design\MyDbContextGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Namespace));
-            
-            #line default
-            #line hidden
             this.Write("\r\n{\r\n\tpublic partial class ");
-            
-            #line 12 "C:\Users\brice\source\repos\Sample\Sample\Design\MyDbContextGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(ContextName));
-            
-            #line default
-            #line hidden
             this.Write(" : DbContext\r\n\t{\r\n");
-            
-            #line 14 "C:\Users\brice\source\repos\Sample\Sample\Design\MyDbContextGenerator.tt"
 
 	foreach (var entityType in Model.GetEntityTypes())
 	{
 
-            
-            #line default
-            #line hidden
             this.Write("\t\tpublic virtual DbSet<");
-            
-            #line 18 "C:\Users\brice\source\repos\Sample\Sample\Design\MyDbContextGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(entityType.Name));
-            
-            #line default
-            #line hidden
             this.Write("> ");
-            
-            #line 18 "C:\Users\brice\source\repos\Sample\Sample\Design\MyDbContextGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(entityType.Scaffolding().DbSetName));
-            
-            #line default
-            #line hidden
             this.Write(" { get; set; }\r\n");
-            
-            #line 19 "C:\Users\brice\source\repos\Sample\Sample\Design\MyDbContextGenerator.tt"
 
 	}
 
-            
-            #line default
-            #line hidden
-            this.Write("\t\tprotected override void OnConfiguring(DbContextOptionsBuilder options)\r\n\t\t    =" +
-                    "> options");
-            
-            #line 23 "C:\Users\brice\source\repos\Sample\Sample\Design\MyDbContextGenerator.tt"
+            this.Write("\r\n\t\tprotected override void OnConfiguring(DbContextOptionsBuilder options)\r\n\t\t   " +
+                    " => options");
             this.Write(this.ToStringHelper.ToStringWithCulture(Code.Fragment(ProviderCode.GenerateUseProvider(ConnectionString))));
-            
-            #line default
-            #line hidden
             this.Write(";\r\n\r\n\t\tprotected override void OnModelCreating(ModelBuilder modelBuilder)\r\n\t\t{\r\n");
-            
-            #line 27 "C:\Users\brice\source\repos\Sample\Sample\Design\MyDbContextGenerator.tt"
 
 	// TODO
 
-            
-            #line default
-            #line hidden
             this.Write("\t\t}\r\n\t}\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
-        
-        #line 33 "C:\Users\brice\source\repos\Sample\Sample\Design\MyDbContextGenerator.tt"
 
-	public IModel Model { get; set; }
-	public string Namespace { get; set; }
-	public string ContextName { get; set; }
-	public string ConnectionString { get; set; }
+	// TODO: Use paramater directives when compatible with .NET Core
+	public IModel Model { get; private set; }
+	public string Namespace { get; private set; }
+	public string ContextName { get; private set; }
+	public string ConnectionString { get; private set; }
+	public ICSharpHelper Code { get; private set; }
+	public IProviderConfigurationCodeGenerator ProviderCode { get; private set; }
+	public IAnnotationCodeGenerator Annotation { get; private set; }
 
-	public ICSharpHelper Code { get; set; }
-	public IProviderConfigurationCodeGenerator ProviderCode { get; set; }
-	public IAnnotationCodeGenerator Annotation { get; set; }
+	public void Initialize()
+	{
+		Model = (IModel)Session["Model"];
+		Namespace = (string)Session["Namespace"];
+		ContextName = (string)Session["ContextName"];
+		ConnectionString = (string)Session["ConnectionString"];
+		Code = (ICSharpHelper)Session["Code"];
+		ProviderCode = (IProviderConfigurationCodeGenerator)Session["ProviderCode"];
+		Annotation = (IAnnotationCodeGenerator)Session["Annotation"];
+	}
 
-        
-        #line default
-        #line hidden
     }
-    
-    #line default
-    #line hidden
 }
