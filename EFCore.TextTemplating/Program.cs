@@ -7,7 +7,7 @@ namespace EFCore.TextTemplating
     {
         static void Main()
         {
-            // Scaffold-DbContext 'Data Source=Chinook.db' Microsoft.EntityFrameworkCore.Sqlite -OutputDir Models
+            // Scaffold-DbContext 'Data Source=Chinook.db' Microsoft.EntityFrameworkCore.Sqlite -OutputDir Models -Force
 
             var db = new ChinookContext();
             foreach (var artist in db.Artist)

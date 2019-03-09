@@ -1,0 +1,33 @@
+﻿<#@ template inherits="MyCodeGeneratorBase" visibility="internal" linePragmas="false" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore.Design" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore.Metadata" #>
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace <#= Namespace #>.Configuration
+{
+    public class <#= EntityType.Name #>Configuration : IEntityTypeConfiguration<<#= EntityType.Name #>>
+    {
+        public void Configure(EntityTypeBuilder<<#= EntityType.Name #>> builder)
+        {
+<#
+    // TODO
+#>
+        }
+    }
+}
+<#+
+	// NB: T4 parameter directives aren't compatible with .NET Standard
+    public IEntityType EntityType { get; private set; }
+    public string Namespace { get; private set; }
+    public ICSharpHelper Code { get; private set; }
+
+	public void Initialize()
+	{
+		EntityType = (IEntityType)Session["EntityType"];
+		Namespace = (string)Session["Namespace"];
+		Code = (ICSharpHelper)Session["Code"];
+	}
+#>

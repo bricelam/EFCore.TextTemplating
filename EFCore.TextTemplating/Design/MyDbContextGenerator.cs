@@ -9,9 +9,9 @@
 // ------------------------------------------------------------------------------
 namespace EFCore.TextTemplating.Design
 {
+    using System.Linq;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.EntityFrameworkCore.Metadata;
-    using Microsoft.EntityFrameworkCore.Metadata.Internal;
     using Microsoft.EntityFrameworkCore.Scaffolding;
     using System;
     
@@ -27,7 +27,9 @@ namespace EFCore.TextTemplating.Design
         public override string TransformText()
         {
             this.Write("using System;\r\nusing Microsoft.EntityFrameworkCore;\r\nusing Microsoft.EntityFramew" +
-                    "orkCore.Metadata;\r\n\r\nnamespace ");
+                    "orkCore.Metadata;\r\nusing ");
+            this.Write(this.ToStringHelper.ToStringWithCulture(Namespace));
+            this.Write(".Configuration;\r\n\r\nnamespace ");
             this.Write(this.ToStringHelper.ToStringWithCulture(Namespace));
             this.Write("\r\n{\r\n\tpublic partial class ");
             this.Write(this.ToStringHelper.ToStringWithCulture(ContextName));
@@ -39,7 +41,7 @@ namespace EFCore.TextTemplating.Design
             this.Write("\t\tpublic virtual DbSet<");
             this.Write(this.ToStringHelper.ToStringWithCulture(entityType.Name));
             this.Write("> ");
-            this.Write(this.ToStringHelper.ToStringWithCulture(entityType.Scaffolding().DbSetName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(entityType["Scaffolding:DbSetName"]));
             this.Write(" { get; set; }\r\n");
 
 	}
@@ -49,13 +51,52 @@ namespace EFCore.TextTemplating.Design
             this.Write(this.ToStringHelper.ToStringWithCulture(Code.Fragment(ProviderCode.GenerateUseProvider(ConnectionString))));
             this.Write(";\r\n\r\n\t\tprotected override void OnModelCreating(ModelBuilder modelBuilder)\r\n\t\t{\r\n");
 
-	// TODO
+	foreach (var annotation in Model.GetAnnotations())
+	{
+		if (annotation.Name == "Scaffolding:DatabaseName"
+			|| annotation.Name == "Scaffolding:EntityTypeErrors"
+			|| annotation.Name.StartsWith(RelationalAnnotationNames.SequencePrefix)
+			|| annotation.Value == null
+			|| Annotation.IsHandledByConvention(Model, annotation))
+		{
+			continue;
+		}
+
+        var methodCall = Annotation.GenerateFluentApi(Model, annotation);
+        if (methodCall != null)
+        {
+
+            this.Write("\t\t\tmodelBuilder");
+            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Fragment(methodCall)));
+            this.Write(";\r\n");
+
+        }
+		else
+		{
+
+            this.Write("\t\t\tmodelBuilder.HasAnnotation(");
+            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Literal(annotation.Name)));
+            this.Write(", ");
+            this.Write(this.ToStringHelper.ToStringWithCulture(Code.UnknownLiteral(annotation.Value)));
+            this.Write(");\r\n");
+
+		}
+	}
+
+	foreach (var entityType in Model.GetEntityTypes())
+	{
+
+            this.Write("\t\t\tmodelBuilder.ApplyConfiguration(new ");
+            this.Write(this.ToStringHelper.ToStringWithCulture(entityType.Name));
+            this.Write("Configuration());\r\n");
+
+	}
 
             this.Write("\t\t}\r\n\t}\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
 
-	// TODO: Use paramater directives when compatible with .NET Core
+	// NB: T4 parameter directives aren't compatible with .NET Standard
 	public IModel Model { get; private set; }
 	public string Namespace { get; private set; }
 	public string ContextName { get; private set; }

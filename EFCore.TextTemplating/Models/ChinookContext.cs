@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using EFCore.TextTemplating.Models.Configuration;
 
 namespace EFCore.TextTemplating.Models
 {
@@ -23,6 +24,17 @@ namespace EFCore.TextTemplating.Models
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			modelBuilder.ApplyConfiguration(new AlbumConfiguration());
+			modelBuilder.ApplyConfiguration(new ArtistConfiguration());
+			modelBuilder.ApplyConfiguration(new CustomerConfiguration());
+			modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
+			modelBuilder.ApplyConfiguration(new GenreConfiguration());
+			modelBuilder.ApplyConfiguration(new InvoiceConfiguration());
+			modelBuilder.ApplyConfiguration(new InvoiceLineConfiguration());
+			modelBuilder.ApplyConfiguration(new MediaTypeConfiguration());
+			modelBuilder.ApplyConfiguration(new PlaylistConfiguration());
+			modelBuilder.ApplyConfiguration(new PlaylistTrackConfiguration());
+			modelBuilder.ApplyConfiguration(new TrackConfiguration());
 		}
 	}
 }

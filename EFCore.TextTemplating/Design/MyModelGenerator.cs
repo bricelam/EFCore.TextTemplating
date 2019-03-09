@@ -2,11 +2,14 @@
 using System.IO;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 
 namespace EFCore.TextTemplating.Design
 {
+    /// <summary>
+    /// Implements the EF Core service used to generate code for a model. This class essentially just calls the T4
+    /// templates.
+    /// </summary>
     class MyModelGenerator : ModelCodeGenerator
     {
         readonly IProviderConfigurationCodeGenerator _providerConfigurationCodeGenerator;
@@ -15,14 +18,12 @@ namespace EFCore.TextTemplating.Design
 
         public MyModelGenerator(
             ModelCodeGeneratorDependencies dependencies,
-            // UNDONE: Breaks DI
-            //IProviderConfigurationCodeGenerator providerConfigurationCodeGenerator,
+            IProviderConfigurationCodeGenerator providerConfigurationCodeGenerator,
             IAnnotationCodeGenerator annotationCodeGenerator,
             ICSharpHelper csharpHelper)
             : base(dependencies)
         {
-            _providerConfigurationCodeGenerator = new Microsoft.EntityFrameworkCore.Sqlite.Scaffolding.Internal.SqliteCodeGenerator(new ProviderCodeGeneratorDependencies());
-            //_providerConfigurationCodeGenerator = providerConfigurationCodeGenerator;
+            _providerConfigurationCodeGenerator = providerConfigurationCodeGenerator;
             _annotationCodeGenerator = annotationCodeGenerator;
             _csharpHelper = csharpHelper;
         }
@@ -81,7 +82,27 @@ namespace EFCore.TextTemplating.Design
                 resultingFiles.AdditionalFiles.Add(
                     new ScaffoldedFile
                     {
-                        Path = entityType.DisplayName() + ".cs",
+                        Path = entityType.Name + ".cs",
+                        Code = generatedCode
+                    });
+
+                var configurationGenerator = new MyEntityTypeConfigurationGenerator
+                {
+                    Session = new Dictionary<string, object>
+                    {
+                        ["EntityType"] = entityType,
+                        ["Namespace"] = @namespace,
+
+                        ["Code"] = _csharpHelper
+                    }
+                };
+                configurationGenerator.Initialize();
+                generatedCode = configurationGenerator.TransformText();
+
+                resultingFiles.AdditionalFiles.Add(
+                    new ScaffoldedFile
+                    {
+                        Path = Path.Combine("Configuration", entityType.Name + "Configuration.cs"),
                         Code = generatedCode
                     });
             }

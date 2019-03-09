@@ -13,7 +13,6 @@ namespace EFCore.TextTemplating.Design
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.EntityFrameworkCore.Metadata;
-    using Microsoft.EntityFrameworkCore.Metadata.Internal;
     using System;
     
     /// <summary>
@@ -34,7 +33,7 @@ namespace EFCore.TextTemplating.Design
             this.Write(this.ToStringHelper.ToStringWithCulture(EntityType.Name));
             this.Write("\r\n    {\r\n");
 
-    foreach (var property in EntityType.GetProperties().OrderBy(p => p.Scaffolding().ColumnOrdinal))
+    foreach (var property in EntityType.GetProperties().OrderBy(p => p["Scaffolding:ColumnOrdinal"]))
     {
 		if (!property.IsNullable
 			&& (!property.ClrType.IsValueType
@@ -108,7 +107,7 @@ namespace EFCore.TextTemplating.Design
             return this.GenerationEnvironment.ToString();
         }
 
-	// TODO: Use paramater directives when compatible with .NET Core
+	// NB: T4 parameter directives aren't compatible with .NET Standard
     public IEntityType EntityType { get; private set; }
     public string Namespace { get; private set; }
     public ICSharpHelper Code { get; private set; }

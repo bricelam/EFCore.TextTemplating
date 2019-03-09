@@ -31,6 +31,10 @@
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>MyDbContextGenerator.cs</LastGenOutput>
     </None>
+    <None Update="Design\MyEntityTypeConfigurationGenerator.tt">
+      <LastGenOutput>MyEntityTypeConfigurationGenerator.cs</LastGenOutput>
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+    </None>
     <None Update="Design\MyEntityTypeGenerator.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>MyEntityTypeGenerator.cs</LastGenOutput>
@@ -51,6 +55,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>MyEntityTypeGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Design\MyEntityTypeConfigurationGenerator.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MyEntityTypeConfigurationGenerator.tt</DependentUpon>
     </Compile>
   </ItemGroup>
 

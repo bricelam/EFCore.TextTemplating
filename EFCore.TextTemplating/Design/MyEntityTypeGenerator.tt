@@ -3,7 +3,6 @@
 <#@ import namespace="Microsoft.EntityFrameworkCore" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore.Design" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore.Metadata" #>
-<#@ import namespace="Microsoft.EntityFrameworkCore.Metadata.Internal" #>
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,7 +12,7 @@ namespace <#= Namespace #>
     public partial class <#= EntityType.Name #>
     {
 <#
-    foreach (var property in EntityType.GetProperties().OrderBy(p => p.Scaffolding().ColumnOrdinal))
+    foreach (var property in EntityType.GetProperties().OrderBy(p => p["Scaffolding:ColumnOrdinal"]))
     {
 		if (!property.IsNullable
 			&& (!property.ClrType.IsValueType
@@ -71,7 +70,7 @@ namespace <#= Namespace #>
     }
 }
 <#+
-	// TODO: Use paramater directives when compatible with .NET Core
+	// NB: T4 parameter directives aren't compatible with .NET Standard
     public IEntityType EntityType { get; private set; }
     public string Namespace { get; private set; }
     public ICSharpHelper Code { get; private set; }

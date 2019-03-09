@@ -1,11 +1,12 @@
 ﻿<#@ template inherits="MyCodeGeneratorBase" visibility="internal" linePragmas="false" #>
+<#@ import namespace="System.Linq" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore.Design" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore.Metadata" #>
-<#@ import namespace="Microsoft.EntityFrameworkCore.Metadata.Internal" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore.Scaffolding" #>
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using <#= Namespace #>.Configuration;
 
 namespace <#= Namespace #>
 {
@@ -15,7 +16,7 @@ namespace <#= Namespace #>
 	foreach (var entityType in Model.GetEntityTypes())
 	{
 #>
-		public virtual DbSet<<#= entityType.Name #>> <#= entityType.Scaffolding().DbSetName #> { get; set; }
+		public virtual DbSet<<#= entityType.Name #>> <#= entityType["Scaffolding:DbSetName"] #> { get; set; }
 <#
 	}
 #>
@@ -26,13 +27,44 @@ namespace <#= Namespace #>
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 <#
-	// TODO
+	foreach (var annotation in Model.GetAnnotations())
+	{
+		if (annotation.Name == "Scaffolding:DatabaseName"
+			|| annotation.Name == "Scaffolding:EntityTypeErrors"
+			|| annotation.Name.StartsWith(RelationalAnnotationNames.SequencePrefix)
+			|| annotation.Value == null
+			|| Annotation.IsHandledByConvention(Model, annotation))
+		{
+			continue;
+		}
+
+        var methodCall = Annotation.GenerateFluentApi(Model, annotation);
+        if (methodCall != null)
+        {
+#>
+			modelBuilder<#= Code.Fragment(methodCall) #>;
+<#
+        }
+		else
+		{
+#>
+			modelBuilder.HasAnnotation(<#= Code.Literal(annotation.Name) #>, <#= Code.UnknownLiteral(annotation.Value) #>);
+<#
+		}
+	}
+
+	foreach (var entityType in Model.GetEntityTypes())
+	{
+#>
+			modelBuilder.ApplyConfiguration(new <#= entityType.Name #>Configuration());
+<#
+	}
 #>
 		}
 	}
 }
 <#+
-	// TODO: Use paramater directives when compatible with .NET Core
+	// NB: T4 parameter directives aren't compatible with .NET Standard
 	public IModel Model { get; private set; }
 	public string Namespace { get; private set; }
 	public string ContextName { get; private set; }
