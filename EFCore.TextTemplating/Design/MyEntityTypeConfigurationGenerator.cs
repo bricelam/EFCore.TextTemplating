@@ -27,9 +27,11 @@ namespace EFCore.TextTemplating.Design
         public override string TransformText()
         {
             this.Write("using Microsoft.EntityFrameworkCore;\r\nusing Microsoft.EntityFrameworkCore.Metadat" +
-                    "a.Builders;\r\n\r\nnamespace ");
+                    "a.Builders;\r\nusing ");
+            this.Write(this.ToStringHelper.ToStringWithCulture(ModelNamespace));
+            this.Write(";\r\n\r\nnamespace ");
             this.Write(this.ToStringHelper.ToStringWithCulture(Namespace));
-            this.Write(".Configuration\r\n{\r\n    public class ");
+            this.Write("\r\n{\r\n    public class ");
             this.Write(this.ToStringHelper.ToStringWithCulture(EntityType.Name));
             this.Write("Configuration : IEntityTypeConfiguration<");
             this.Write(this.ToStringHelper.ToStringWithCulture(EntityType.Name));
@@ -45,12 +47,14 @@ namespace EFCore.TextTemplating.Design
 
     // NB: T4 parameter directives aren't compatible with .NET Standard
     public IEntityType EntityType { get; private set; }
+    public string ModelNamespace { get; private set; }
     public string Namespace { get; private set; }
     public ICSharpHelper Code { get; private set; }
 
     public void Initialize()
     {
         EntityType = (IEntityType)Session["EntityType"];
+        ModelNamespace = (string)Session["ModelNamespace"];
         Namespace = (string)Session["Namespace"];
         Code = (ICSharpHelper)Session["Code"];
     }

@@ -28,8 +28,8 @@ namespace EFCore.TextTemplating.Design
         {
             this.Write("using System;\r\nusing Microsoft.EntityFrameworkCore;\r\nusing Microsoft.EntityFramew" +
                     "orkCore.Metadata;\r\nusing ");
-            this.Write(this.ToStringHelper.ToStringWithCulture(Namespace));
-            this.Write(".Configuration;\r\n\r\nnamespace ");
+            this.Write(this.ToStringHelper.ToStringWithCulture(ModelNamespace));
+            this.Write(";\r\n\r\nnamespace ");
             this.Write(this.ToStringHelper.ToStringWithCulture(Namespace));
             this.Write("\r\n{\r\n    public partial class ");
             this.Write(this.ToStringHelper.ToStringWithCulture(ContextName));
@@ -109,6 +109,7 @@ namespace EFCore.TextTemplating.Design
 
     // NB: T4 parameter directives aren't compatible with .NET Standard
     public IModel Model { get; private set; }
+    public string ModelNamespace { get; private set; }
     public string Namespace { get; private set; }
     public string ContextName { get; private set; }
     public string ConnectionString { get; private set; }
@@ -119,6 +120,7 @@ namespace EFCore.TextTemplating.Design
     public void Initialize()
     {
         Model = (IModel)Session["Model"];
+        ModelNamespace = (string)Session["ModelNamespace"];
         Namespace = (string)Session["Namespace"];
         ContextName = (string)Session["ContextName"];
         ConnectionString = (string)Session["ConnectionString"];

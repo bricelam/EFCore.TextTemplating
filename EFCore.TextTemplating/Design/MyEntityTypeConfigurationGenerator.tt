@@ -5,8 +5,9 @@
 <#@ import namespace="Microsoft.EntityFrameworkCore.Metadata" #>
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using <#= ModelNamespace #>;
 
-namespace <#= Namespace #>.Configuration
+namespace <#= Namespace #>
 {
     public class <#= EntityType.Name #>Configuration : IEntityTypeConfiguration<<#= EntityType.Name #>>
     {
@@ -21,12 +22,14 @@ namespace <#= Namespace #>.Configuration
 <#+
     // NB: T4 parameter directives aren't compatible with .NET Standard
     public IEntityType EntityType { get; private set; }
+    public string ModelNamespace { get; private set; }
     public string Namespace { get; private set; }
     public ICSharpHelper Code { get; private set; }
 
     public void Initialize()
     {
         EntityType = (IEntityType)Session["EntityType"];
+        ModelNamespace = (string)Session["ModelNamespace"];
         Namespace = (string)Session["Namespace"];
         Code = (ICSharpHelper)Session["Code"];
     }

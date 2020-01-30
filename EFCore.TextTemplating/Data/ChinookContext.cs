@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using EFCore.TextTemplating.Models.Configuration;
+using EFCore.TextTemplating.Models;
 
-namespace EFCore.TextTemplating.Models
+namespace EFCore.TextTemplating.Data
 {
     public partial class ChinookContext : DbContext
     {

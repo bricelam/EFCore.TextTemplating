@@ -1,5 +1,5 @@
 ﻿using System;
-using EFCore.TextTemplating.Models;
+using EFCore.TextTemplating.Data;
 
 namespace EFCore.TextTemplating
 {
@@ -7,7 +7,7 @@ namespace EFCore.TextTemplating
     {
         static void Main()
         {
-            // Scaffold-DbContext 'Data Source=Chinook.db' Microsoft.EntityFrameworkCore.Sqlite -OutputDir Models -Force
+            // Scaffold-DbContext 'Data Source=Chinook.db' Microsoft.EntityFrameworkCore.Sqlite -OutputDir Models -ContextDir Data -Force
 
             var db = new ChinookContext();
             foreach (var artist in db.Artist)

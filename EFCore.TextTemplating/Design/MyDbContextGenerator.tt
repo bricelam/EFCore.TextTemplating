@@ -6,7 +6,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using <#= Namespace #>.Configuration;
+using <#= ModelNamespace #>;
 
 namespace <#= Namespace #>
 {
@@ -76,6 +76,7 @@ namespace <#= Namespace #>
 <#+
     // NB: T4 parameter directives aren't compatible with .NET Standard
     public IModel Model { get; private set; }
+    public string ModelNamespace { get; private set; }
     public string Namespace { get; private set; }
     public string ContextName { get; private set; }
     public string ConnectionString { get; private set; }
@@ -86,6 +87,7 @@ namespace <#= Namespace #>
     public void Initialize()
     {
         Model = (IModel)Session["Model"];
+        ModelNamespace = (string)Session["ModelNamespace"];
         Namespace = (string)Session["Namespace"];
         ContextName = (string)Session["ContextName"];
         ConnectionString = (string)Session["ConnectionString"];

@@ -30,7 +30,6 @@ namespace EFCore.TextTemplating.Design
 
         public override string Language => "C#";
 
-        // TODO: Honor context namespace
         public override ScaffoldedModel GenerateModel(IModel model, ModelCodeGenerationOptions options)
         {
             var resultingFiles = new ScaffoldedModel();
@@ -40,7 +39,8 @@ namespace EFCore.TextTemplating.Design
                 Session = new Dictionary<string, object>
                 {
                     ["Model"] = model,
-                    ["Namespace"] = options.ModelNamespace,
+                    ["ModelNamespace"] = options.ModelNamespace,
+                    ["Namespace"] = options.ContextNamespace,
                     ["ContextName"] = options.ContextName,
                     ["ConnectionString"] = options.ConnectionString,
 
@@ -86,7 +86,8 @@ namespace EFCore.TextTemplating.Design
                     Session = new Dictionary<string, object>
                     {
                         ["EntityType"] = entityType,
-                        ["Namespace"] = options.ModelNamespace,
+                        ["ModelNamespace"] = options.ModelNamespace,
+                        ["Namespace"] = options.ContextNamespace,
 
                         ["Code"] = _csharpHelper
                     }
@@ -97,7 +98,7 @@ namespace EFCore.TextTemplating.Design
                 resultingFiles.AdditionalFiles.Add(
                     new ScaffoldedFile
                     {
-                        Path = Path.Combine("Configuration", entityType.Name + "Configuration.cs"),
+                        Path = Path.Combine(options.ContextDir, entityType.Name + "Configuration.cs"),
                         Code = generatedCode
                     });
             }
