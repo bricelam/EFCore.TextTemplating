@@ -8,19 +8,19 @@ namespace EFCore.TextTemplating.Models
     {
         public long EmployeeId { get; set; }
 
-		[Required]
+        [Required]
         public string LastName { get; set; }
 
-		[Required]
+        [Required]
         public string FirstName { get; set; }
 
         public string Title { get; set; }
 
         public long? ReportsTo { get; set; }
 
-        public string BirthDate { get; set; }
+        public byte[] BirthDate { get; set; }
 
-        public string HireDate { get; set; }
+        public byte[] HireDate { get; set; }
 
         public string Address { get; set; }
 
@@ -38,11 +38,11 @@ namespace EFCore.TextTemplating.Models
 
         public string Email { get; set; }
 
-		public virtual ICollection<Customer> Customer { get; } = new HashSet<Customer>();
+        public virtual ICollection<Customer> Customer { get; } = new HashSet<Customer>();
 
-		public virtual ICollection<Employee> InverseReportsToNavigation { get; } = new HashSet<Employee>();
+        public virtual ICollection<Employee> InverseReportsToNavigation { get; } = new HashSet<Employee>();
 
-		public virtual Employee ReportsToNavigation { get; set; }
+        public virtual Employee ReportsToNavigation { get; set; }
 
     }
 }

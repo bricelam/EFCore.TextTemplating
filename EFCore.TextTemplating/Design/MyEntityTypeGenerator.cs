@@ -35,37 +35,37 @@ namespace EFCore.TextTemplating.Design
 
     foreach (var property in EntityType.GetProperties().OrderBy(p => p["Scaffolding:ColumnOrdinal"]))
     {
-		if (!property.IsNullable
-			&& (!property.ClrType.IsValueType
-				|| property.ClrType.IsGenericType
-				&& property.ClrType.GetGenericTypeDefinition() == typeof(Nullable<>))
-			&& !property.IsPrimaryKey())
-		{
+        if (!property.IsNullable
+            && (!property.ClrType.IsValueType
+                || property.ClrType.IsGenericType
+                && property.ClrType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            && !property.IsPrimaryKey())
+        {
 
-            this.Write("\t\t[Required]\r\n");
+            this.Write("        [Required]\r\n");
 
-		}
+        }
 
-		var maxLength = property.GetMaxLength();
-		if (maxLength.HasValue)
-		{
-			if (property.ClrType == typeof(string))
-			{
+        var maxLength = property.GetMaxLength();
+        if (maxLength.HasValue)
+        {
+            if (property.ClrType == typeof(string))
+            {
 
-            this.Write("\t\t[StringLength(");
+            this.Write("        [StringLength(");
             this.Write(this.ToStringHelper.ToStringWithCulture(Code.Literal(maxLength.Value)));
             this.Write(")]\r\n");
 
-			}
-			else
-			{
+            }
+            else
+            {
 
-            this.Write("\t\t[MaxLength(");
+            this.Write("        [MaxLength(");
             this.Write(this.ToStringHelper.ToStringWithCulture(Code.Literal(maxLength.Value)));
             this.Write(")]\r\n");
 
-			}
-		}
+            }
+        }
 
             this.Write("        public ");
             this.Write(this.ToStringHelper.ToStringWithCulture(Code.Reference(property.ClrType)));
@@ -75,14 +75,14 @@ namespace EFCore.TextTemplating.Design
 
     }
 
-	foreach (var navigation in EntityType.GetNavigations())
-	{
-		var targetTypeName = navigation.GetTargetType().Name;
+    foreach (var navigation in EntityType.GetNavigations())
+    {
+        var targetTypeName = navigation.GetTargetType().Name;
 
-		if (navigation.IsCollection())
-		{
+        if (navigation.IsCollection())
+        {
 
-            this.Write("\t\tpublic virtual ICollection<");
+            this.Write("        public virtual ICollection<");
             this.Write(this.ToStringHelper.ToStringWithCulture(targetTypeName));
             this.Write("> ");
             this.Write(this.ToStringHelper.ToStringWithCulture(navigation.Name));
@@ -90,34 +90,34 @@ namespace EFCore.TextTemplating.Design
             this.Write(this.ToStringHelper.ToStringWithCulture(targetTypeName));
             this.Write(">();\r\n\r\n");
 
-		}
-		else
-		{
+        }
+        else
+        {
 
-            this.Write("\t\tpublic virtual ");
+            this.Write("        public virtual ");
             this.Write(this.ToStringHelper.ToStringWithCulture(targetTypeName));
             this.Write(" ");
             this.Write(this.ToStringHelper.ToStringWithCulture(navigation.Name));
             this.Write(" { get; set; }\r\n\r\n");
 
-		}
-	}
+        }
+    }
 
             this.Write("    }\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
 
-	// NB: T4 parameter directives aren't compatible with .NET Standard
+    // NB: T4 parameter directives aren't compatible with .NET Standard
     public IEntityType EntityType { get; private set; }
     public string Namespace { get; private set; }
     public ICSharpHelper Code { get; private set; }
 
-	public void Initialize()
-	{
-		EntityType = (IEntityType)Session["EntityType"];
-		Namespace = (string)Session["Namespace"];
-		Code = (ICSharpHelper)Session["Code"];
-	}
+    public void Initialize()
+    {
+        EntityType = (IEntityType)Session["EntityType"];
+        Namespace = (string)Session["Namespace"];
+        Code = (ICSharpHelper)Session["Code"];
+    }
 
     }
 }

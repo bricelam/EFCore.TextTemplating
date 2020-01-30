@@ -14,71 +14,71 @@ namespace <#= Namespace #>
 <#
     foreach (var property in EntityType.GetProperties().OrderBy(p => p["Scaffolding:ColumnOrdinal"]))
     {
-		if (!property.IsNullable
-			&& (!property.ClrType.IsValueType
-				|| property.ClrType.IsGenericType
-				&& property.ClrType.GetGenericTypeDefinition() == typeof(Nullable<>))
-			&& !property.IsPrimaryKey())
-		{
+        if (!property.IsNullable
+            && (!property.ClrType.IsValueType
+                || property.ClrType.IsGenericType
+                && property.ClrType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            && !property.IsPrimaryKey())
+        {
 #>
-		[Required]
+        [Required]
 <#
-		}
+        }
 
-		var maxLength = property.GetMaxLength();
-		if (maxLength.HasValue)
-		{
-			if (property.ClrType == typeof(string))
-			{
+        var maxLength = property.GetMaxLength();
+        if (maxLength.HasValue)
+        {
+            if (property.ClrType == typeof(string))
+            {
 #>
-		[StringLength(<#= Code.Literal(maxLength.Value) #>)]
+        [StringLength(<#= Code.Literal(maxLength.Value) #>)]
 <#
-			}
-			else
-			{
+            }
+            else
+            {
 #>
-		[MaxLength(<#= Code.Literal(maxLength.Value) #>)]
+        [MaxLength(<#= Code.Literal(maxLength.Value) #>)]
 <#
-			}
-		}
+            }
+        }
 #>
         public <#= Code.Reference(property.ClrType) #> <#= property.Name #> { get; set; }
 
 <#
     }
 
-	foreach (var navigation in EntityType.GetNavigations())
-	{
-		var targetTypeName = navigation.GetTargetType().Name;
+    foreach (var navigation in EntityType.GetNavigations())
+    {
+        var targetTypeName = navigation.GetTargetType().Name;
 
-		if (navigation.IsCollection())
-		{
+        if (navigation.IsCollection())
+        {
 #>
-		public virtual ICollection<<#= targetTypeName #>> <#= navigation.Name #> { get; } = new HashSet<<#= targetTypeName #>>();
+        public virtual ICollection<<#= targetTypeName #>> <#= navigation.Name #> { get; } = new HashSet<<#= targetTypeName #>>();
 
 <#
-		}
-		else
-		{
+        }
+        else
+        {
 #>
-		public virtual <#= targetTypeName #> <#= navigation.Name #> { get; set; }
+        public virtual <#= targetTypeName #> <#= navigation.Name #> { get; set; }
 
 <#
-		}
-	}
+        }
+    }
 #>
     }
 }
 <#+
-	// NB: T4 parameter directives aren't compatible with .NET Standard
+    // NB: T4 parameter directives aren't compatible with .NET Standard
     public IEntityType EntityType { get; private set; }
     public string Namespace { get; private set; }
     public ICSharpHelper Code { get; private set; }
 
-	public void Initialize()
-	{
-		EntityType = (IEntityType)Session["EntityType"];
-		Namespace = (string)Session["Namespace"];
-		Code = (ICSharpHelper)Session["Code"];
-	}
+    public void Initialize()
+    {
+        EntityType = (IEntityType)Session["EntityType"];
+        Namespace = (string)Session["Namespace"];
+        Code = (ICSharpHelper)Session["Code"];
+    }
 #>

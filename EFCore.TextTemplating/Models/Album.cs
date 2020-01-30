@@ -8,14 +8,14 @@ namespace EFCore.TextTemplating.Models
     {
         public long AlbumId { get; set; }
 
-		[Required]
+        [Required]
         public string Title { get; set; }
 
         public long ArtistId { get; set; }
 
-		public virtual Artist Artist { get; set; }
+        public virtual Artist Artist { get; set; }
 
-		public virtual ICollection<Track> Track { get; } = new HashSet<Track>();
+        public virtual ICollection<Track> Track { get; } = new HashSet<Track>();
 
     }
 }

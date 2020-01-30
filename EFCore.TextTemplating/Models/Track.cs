@@ -8,7 +8,7 @@ namespace EFCore.TextTemplating.Models
     {
         public long TrackId { get; set; }
 
-		[Required]
+        [Required]
         public string Name { get; set; }
 
         public long? AlbumId { get; set; }
@@ -23,18 +23,18 @@ namespace EFCore.TextTemplating.Models
 
         public long? Bytes { get; set; }
 
-		[Required]
-        public string UnitPrice { get; set; }
+        [Required]
+        public byte[] UnitPrice { get; set; }
 
-		public virtual Album Album { get; set; }
+        public virtual Album Album { get; set; }
 
-		public virtual Genre Genre { get; set; }
+        public virtual Genre Genre { get; set; }
 
-		public virtual ICollection<InvoiceLine> InvoiceLine { get; } = new HashSet<InvoiceLine>();
+        public virtual ICollection<InvoiceLine> InvoiceLine { get; } = new HashSet<InvoiceLine>();
 
-		public virtual MediaType MediaType { get; set; }
+        public virtual MediaType MediaType { get; set; }
 
-		public virtual ICollection<PlaylistTrack> PlaylistTrack { get; } = new HashSet<PlaylistTrack>();
+        public virtual ICollection<PlaylistTrack> PlaylistTrack { get; } = new HashSet<PlaylistTrack>();
 
     }
 }

@@ -10,7 +10,7 @@ namespace EFCore.TextTemplating.Models
 
         public string Name { get; set; }
 
-		public virtual ICollection<Album> Album { get; } = new HashSet<Album>();
+        public virtual ICollection<Album> Album { get; } = new HashSet<Album>();
 
     }
 }

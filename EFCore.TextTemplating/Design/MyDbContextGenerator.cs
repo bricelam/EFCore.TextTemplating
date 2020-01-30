@@ -31,90 +31,101 @@ namespace EFCore.TextTemplating.Design
             this.Write(this.ToStringHelper.ToStringWithCulture(Namespace));
             this.Write(".Configuration;\r\n\r\nnamespace ");
             this.Write(this.ToStringHelper.ToStringWithCulture(Namespace));
-            this.Write("\r\n{\r\n\tpublic partial class ");
+            this.Write("\r\n{\r\n    public partial class ");
             this.Write(this.ToStringHelper.ToStringWithCulture(ContextName));
-            this.Write(" : DbContext\r\n\t{\r\n");
+            this.Write(" : DbContext\r\n    {\r\n");
 
-	foreach (var entityType in Model.GetEntityTypes())
-	{
+    foreach (var entityType in Model.GetEntityTypes())
+    {
 
-            this.Write("\t\tpublic virtual DbSet<");
+            this.Write("        public virtual DbSet<");
             this.Write(this.ToStringHelper.ToStringWithCulture(entityType.Name));
             this.Write("> ");
             this.Write(this.ToStringHelper.ToStringWithCulture(entityType["Scaffolding:DbSetName"]));
             this.Write(" { get; set; }\r\n");
 
-	}
+    }
 
-            this.Write("\r\n\t\tprotected override void OnConfiguring(DbContextOptionsBuilder options)\r\n\t\t   " +
-                    " => options");
-            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Fragment(ProviderCode.GenerateUseProvider(ConnectionString))));
-            this.Write(";\r\n\r\n\t\tprotected override void OnModelCreating(ModelBuilder modelBuilder)\r\n\t\t{\r\n");
+    var useProvider = ProviderCode.GenerateUseProvider(
+        ConnectionString,
+        ProviderCode.GenerateProviderOptions());
+    var contextOptions = ProviderCode.GenerateContextOptions();
+    if (contextOptions != null)
+    {
+        useProvider = useProvider.Chain(contextOptions);
+    }
 
-	foreach (var annotation in Model.GetAnnotations())
-	{
-		if (annotation.Name == "Scaffolding:DatabaseName"
-			|| annotation.Name == "Scaffolding:EntityTypeErrors"
-			|| annotation.Name.StartsWith(RelationalAnnotationNames.SequencePrefix)
-			|| annotation.Value == null
-			|| Annotation.IsHandledByConvention(Model, annotation))
-		{
-			continue;
-		}
+            this.Write("\r\n        protected override void OnConfiguring(DbContextOptionsBuilder options)\r" +
+                    "\n            => options");
+            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Fragment(useProvider)));
+            this.Write(";\r\n\r\n        protected override void OnModelCreating(ModelBuilder modelBuilder)\r\n" +
+                    "        {\r\n");
+
+    foreach (var annotation in Model.GetAnnotations())
+    {
+        if (annotation.Name == "ProductVersion"
+            || annotation.Name == "Scaffolding:DatabaseName"
+            || annotation.Name == "Scaffolding:EntityTypeErrors"
+            || annotation.Name.StartsWith(RelationalAnnotationNames.SequencePrefix)
+            || annotation.Value == null
+            || Annotation.IsHandledByConvention(Model, annotation))
+        {
+            continue;
+        }
 
         var methodCall = Annotation.GenerateFluentApi(Model, annotation);
         if (methodCall != null)
         {
 
-            this.Write("\t\t\tmodelBuilder");
+            this.Write("            modelBuilder");
             this.Write(this.ToStringHelper.ToStringWithCulture(Code.Fragment(methodCall)));
             this.Write(";\r\n");
 
         }
-		else
-		{
+        else
+        {
 
-            this.Write("\t\t\tmodelBuilder.HasAnnotation(");
+            this.Write("            modelBuilder.HasAnnotation(");
             this.Write(this.ToStringHelper.ToStringWithCulture(Code.Literal(annotation.Name)));
             this.Write(", ");
             this.Write(this.ToStringHelper.ToStringWithCulture(Code.UnknownLiteral(annotation.Value)));
             this.Write(");\r\n");
 
-		}
-	}
+        }
+    }
 
-	foreach (var entityType in Model.GetEntityTypes())
-	{
+    foreach (var entityType in Model.GetEntityTypes())
+    {
 
-            this.Write("\t\t\tmodelBuilder.ApplyConfiguration(new ");
+            this.Write("            modelBuilder.ApplyConfiguration(new ");
             this.Write(this.ToStringHelper.ToStringWithCulture(entityType.Name));
             this.Write("Configuration());\r\n");
 
-	}
+    }
 
-            this.Write("\t\t}\r\n\t}\r\n}\r\n");
+            this.Write("        }\r\n    }\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
 
-	// NB: T4 parameter directives aren't compatible with .NET Standard
-	public IModel Model { get; private set; }
-	public string Namespace { get; private set; }
-	public string ContextName { get; private set; }
-	public string ConnectionString { get; private set; }
-	public ICSharpHelper Code { get; private set; }
-	public IProviderConfigurationCodeGenerator ProviderCode { get; private set; }
-	public IAnnotationCodeGenerator Annotation { get; private set; }
+    // NB: T4 parameter directives aren't compatible with .NET Standard
+    public IModel Model { get; private set; }
+    public string Namespace { get; private set; }
+    public string ContextName { get; private set; }
+    public string ConnectionString { get; private set; }
+    public ICSharpHelper Code { get; private set; }
+    public IProviderConfigurationCodeGenerator ProviderCode { get; private set; }
+    public IAnnotationCodeGenerator Annotation { get; private set; }
 
-	public void Initialize()
-	{
-		Model = (IModel)Session["Model"];
-		Namespace = (string)Session["Namespace"];
-		ContextName = (string)Session["ContextName"];
-		ConnectionString = (string)Session["ConnectionString"];
-		Code = (ICSharpHelper)Session["Code"];
-		ProviderCode = (IProviderConfigurationCodeGenerator)Session["ProviderCode"];
-		Annotation = (IAnnotationCodeGenerator)Session["Annotation"];
-	}
+    public void Initialize()
+    {
+        Model = (IModel)Session["Model"];
+        Namespace = (string)Session["Namespace"];
+        ContextName = (string)Session["ContextName"];
+        ConnectionString = (string)Session["ConnectionString"];
+        Code = (ICSharpHelper)Session["Code"];
+        ProviderCode = (IProviderConfigurationCodeGenerator)Session["ProviderCode"];
+        Annotation = (IAnnotationCodeGenerator)Session["Annotation"];
+    }
 
     }
 }

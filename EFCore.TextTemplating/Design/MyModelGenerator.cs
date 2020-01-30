@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using Microsoft.EntityFrameworkCore.Design;
+﻿using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Scaffolding;
+using System.Collections.Generic;
+using System.IO;
 
 namespace EFCore.TextTemplating.Design
 {
@@ -30,13 +30,8 @@ namespace EFCore.TextTemplating.Design
 
         public override string Language => "C#";
 
-        public override ScaffoldedModel GenerateModel(
-            IModel model,
-            string @namespace,
-            string contextDir,
-            string contextName,
-            string connectionString,
-            ModelCodeGenerationOptions options)
+        // TODO: Honor context namespace
+        public override ScaffoldedModel GenerateModel(IModel model, ModelCodeGenerationOptions options)
         {
             var resultingFiles = new ScaffoldedModel();
 
@@ -45,9 +40,9 @@ namespace EFCore.TextTemplating.Design
                 Session = new Dictionary<string, object>
                 {
                     ["Model"] = model,
-                    ["Namespace"] = @namespace,
-                    ["ContextName"] = contextName,
-                    ["ConnectionString"] = connectionString,
+                    ["Namespace"] = options.ModelNamespace,
+                    ["ContextName"] = options.ContextName,
+                    ["ConnectionString"] = options.ConnectionString,
 
                     ["Code"] = _csharpHelper,
                     ["ProviderCode"] = _providerConfigurationCodeGenerator,
@@ -57,10 +52,10 @@ namespace EFCore.TextTemplating.Design
             contextGenerator.Initialize();
             var generatedCode = contextGenerator.TransformText();
 
-            var dbContextFileName = contextName + ".cs";
+            var dbContextFileName = options.ContextName + ".cs";
             resultingFiles.ContextFile = new ScaffoldedFile
             {
-                Path = Path.Combine(contextDir, dbContextFileName),
+                Path = Path.Combine(options.ContextDir, dbContextFileName),
                 Code = generatedCode
             };
 
@@ -71,7 +66,7 @@ namespace EFCore.TextTemplating.Design
                     Session = new Dictionary<string, object>
                     {
                         ["EntityType"] = entityType,
-                        ["Namespace"] = @namespace,
+                        ["Namespace"] = options.ModelNamespace,
 
                         ["Code"] = _csharpHelper
                     }
@@ -91,7 +86,7 @@ namespace EFCore.TextTemplating.Design
                     Session = new Dictionary<string, object>
                     {
                         ["EntityType"] = entityType,
-                        ["Namespace"] = @namespace,
+                        ["Namespace"] = options.ModelNamespace,
 
                         ["Code"] = _csharpHelper
                     }

@@ -10,9 +10,9 @@ namespace EFCore.TextTemplating.Models
 
         public long TrackId { get; set; }
 
-		public virtual Playlist Playlist { get; set; }
+        public virtual Playlist Playlist { get; set; }
 
-		public virtual Track Track { get; set; }
+        public virtual Track Track { get; set; }
 
     }
 }

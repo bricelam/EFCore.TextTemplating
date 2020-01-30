@@ -10,8 +10,8 @@ namespace EFCore.TextTemplating.Models
 
         public long CustomerId { get; set; }
 
-		[Required]
-        public string InvoiceDate { get; set; }
+        [Required]
+        public byte[] InvoiceDate { get; set; }
 
         public string BillingAddress { get; set; }
 
@@ -23,12 +23,12 @@ namespace EFCore.TextTemplating.Models
 
         public string BillingPostalCode { get; set; }
 
-		[Required]
-        public string Total { get; set; }
+        [Required]
+        public byte[] Total { get; set; }
 
-		public virtual Customer Customer { get; set; }
+        public virtual Customer Customer { get; set; }
 
-		public virtual ICollection<InvoiceLine> InvoiceLine { get; } = new HashSet<InvoiceLine>();
+        public virtual ICollection<InvoiceLine> InvoiceLine { get; } = new HashSet<InvoiceLine>();
 
     }
 }

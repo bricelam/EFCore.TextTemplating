@@ -8,10 +8,10 @@ namespace EFCore.TextTemplating.Models
     {
         public long CustomerId { get; set; }
 
-		[Required]
+        [Required]
         public string FirstName { get; set; }
 
-		[Required]
+        [Required]
         public string LastName { get; set; }
 
         public string Company { get; set; }
@@ -30,14 +30,14 @@ namespace EFCore.TextTemplating.Models
 
         public string Fax { get; set; }
 
-		[Required]
+        [Required]
         public string Email { get; set; }
 
         public long? SupportRepId { get; set; }
 
-		public virtual ICollection<Invoice> Invoice { get; } = new HashSet<Invoice>();
+        public virtual ICollection<Invoice> Invoice { get; } = new HashSet<Invoice>();
 
-		public virtual Employee SupportRep { get; set; }
+        public virtual Employee SupportRep { get; set; }
 
     }
 }

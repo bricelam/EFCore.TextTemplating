@@ -10,77 +10,87 @@ using <#= Namespace #>.Configuration;
 
 namespace <#= Namespace #>
 {
-	public partial class <#= ContextName #> : DbContext
-	{
+    public partial class <#= ContextName #> : DbContext
+    {
 <#
-	foreach (var entityType in Model.GetEntityTypes())
-	{
+    foreach (var entityType in Model.GetEntityTypes())
+    {
 #>
-		public virtual DbSet<<#= entityType.Name #>> <#= entityType["Scaffolding:DbSetName"] #> { get; set; }
+        public virtual DbSet<<#= entityType.Name #>> <#= entityType["Scaffolding:DbSetName"] #> { get; set; }
 <#
-	}
+    }
+
+    var useProvider = ProviderCode.GenerateUseProvider(
+        ConnectionString,
+        ProviderCode.GenerateProviderOptions());
+    var contextOptions = ProviderCode.GenerateContextOptions();
+    if (contextOptions != null)
+    {
+        useProvider = useProvider.Chain(contextOptions);
+    }
 #>
 
-		protected override void OnConfiguring(DbContextOptionsBuilder options)
-		    => options<#= Code.Fragment(ProviderCode.GenerateUseProvider(ConnectionString)) #>;
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+            => options<#= Code.Fragment(useProvider) #>;
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
 <#
-	foreach (var annotation in Model.GetAnnotations())
-	{
-		if (annotation.Name == "Scaffolding:DatabaseName"
-			|| annotation.Name == "Scaffolding:EntityTypeErrors"
-			|| annotation.Name.StartsWith(RelationalAnnotationNames.SequencePrefix)
-			|| annotation.Value == null
-			|| Annotation.IsHandledByConvention(Model, annotation))
-		{
-			continue;
-		}
+    foreach (var annotation in Model.GetAnnotations())
+    {
+        if (annotation.Name == "ProductVersion"
+            || annotation.Name == "Scaffolding:DatabaseName"
+            || annotation.Name == "Scaffolding:EntityTypeErrors"
+            || annotation.Name.StartsWith(RelationalAnnotationNames.SequencePrefix)
+            || annotation.Value == null
+            || Annotation.IsHandledByConvention(Model, annotation))
+        {
+            continue;
+        }
 
         var methodCall = Annotation.GenerateFluentApi(Model, annotation);
         if (methodCall != null)
         {
 #>
-			modelBuilder<#= Code.Fragment(methodCall) #>;
+            modelBuilder<#= Code.Fragment(methodCall) #>;
 <#
         }
-		else
-		{
+        else
+        {
 #>
-			modelBuilder.HasAnnotation(<#= Code.Literal(annotation.Name) #>, <#= Code.UnknownLiteral(annotation.Value) #>);
+            modelBuilder.HasAnnotation(<#= Code.Literal(annotation.Name) #>, <#= Code.UnknownLiteral(annotation.Value) #>);
 <#
-		}
-	}
+        }
+    }
 
-	foreach (var entityType in Model.GetEntityTypes())
-	{
+    foreach (var entityType in Model.GetEntityTypes())
+    {
 #>
-			modelBuilder.ApplyConfiguration(new <#= entityType.Name #>Configuration());
+            modelBuilder.ApplyConfiguration(new <#= entityType.Name #>Configuration());
 <#
-	}
+    }
 #>
-		}
-	}
+        }
+    }
 }
 <#+
-	// NB: T4 parameter directives aren't compatible with .NET Standard
-	public IModel Model { get; private set; }
-	public string Namespace { get; private set; }
-	public string ContextName { get; private set; }
-	public string ConnectionString { get; private set; }
-	public ICSharpHelper Code { get; private set; }
-	public IProviderConfigurationCodeGenerator ProviderCode { get; private set; }
-	public IAnnotationCodeGenerator Annotation { get; private set; }
+    // NB: T4 parameter directives aren't compatible with .NET Standard
+    public IModel Model { get; private set; }
+    public string Namespace { get; private set; }
+    public string ContextName { get; private set; }
+    public string ConnectionString { get; private set; }
+    public ICSharpHelper Code { get; private set; }
+    public IProviderConfigurationCodeGenerator ProviderCode { get; private set; }
+    public IAnnotationCodeGenerator Annotation { get; private set; }
 
-	public void Initialize()
-	{
-		Model = (IModel)Session["Model"];
-		Namespace = (string)Session["Namespace"];
-		ContextName = (string)Session["ContextName"];
-		ConnectionString = (string)Session["ConnectionString"];
-		Code = (ICSharpHelper)Session["Code"];
-		ProviderCode = (IProviderConfigurationCodeGenerator)Session["ProviderCode"];
-		Annotation = (IAnnotationCodeGenerator)Session["Annotation"];
-	}
+    public void Initialize()
+    {
+        Model = (IModel)Session["Model"];
+        Namespace = (string)Session["Namespace"];
+        ContextName = (string)Session["ContextName"];
+        ConnectionString = (string)Session["ConnectionString"];
+        Code = (ICSharpHelper)Session["Code"];
+        ProviderCode = (IProviderConfigurationCodeGenerator)Session["ProviderCode"];
+        Annotation = (IAnnotationCodeGenerator)Session["Annotation"];
+    }
 #>

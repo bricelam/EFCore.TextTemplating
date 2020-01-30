@@ -43,17 +43,17 @@ namespace EFCore.TextTemplating.Design
             return this.GenerationEnvironment.ToString();
         }
 
-	// NB: T4 parameter directives aren't compatible with .NET Standard
+    // NB: T4 parameter directives aren't compatible with .NET Standard
     public IEntityType EntityType { get; private set; }
     public string Namespace { get; private set; }
     public ICSharpHelper Code { get; private set; }
 
-	public void Initialize()
-	{
-		EntityType = (IEntityType)Session["EntityType"];
-		Namespace = (string)Session["Namespace"];
-		Code = (ICSharpHelper)Session["Code"];
-	}
+    public void Initialize()
+    {
+        EntityType = (IEntityType)Session["EntityType"];
+        Namespace = (string)Session["Namespace"];
+        Code = (ICSharpHelper)Session["Code"];
+    }
 
     }
 }
