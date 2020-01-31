@@ -8,6 +8,18 @@ namespace EFCore.TextTemplating.Data
     {
         public void Configure(EntityTypeBuilder<Album> builder)
         {
+            builder.ToTable("Album");
+
+            builder.Property(e => e.AlbumId)
+                .ValueGeneratedNever();
+
+            builder.Property(e => e.Title)
+                .HasColumnType("NVARCHAR(160)");
+
+            builder.HasOne(d => d.Artist).WithMany(p => p.Albums)
+                .HasForeignKey(x => x.ArtistId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
         }
     }
 }

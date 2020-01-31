@@ -13,7 +13,6 @@ namespace EFCore.TextTemplating.Design
     class MyModelGenerator : ModelCodeGenerator
     {
         readonly IProviderConfigurationCodeGenerator _providerConfigurationCodeGenerator;
-        readonly IAnnotationCodeGenerator _annotationCodeGenerator;
         readonly ICSharpHelper _csharpHelper;
 
         public MyModelGenerator(
@@ -24,7 +23,6 @@ namespace EFCore.TextTemplating.Design
             : base(dependencies)
         {
             _providerConfigurationCodeGenerator = providerConfigurationCodeGenerator;
-            _annotationCodeGenerator = annotationCodeGenerator;
             _csharpHelper = csharpHelper;
         }
 
@@ -46,7 +44,6 @@ namespace EFCore.TextTemplating.Design
 
                     ["Code"] = _csharpHelper,
                     ["ProviderCode"] = _providerConfigurationCodeGenerator,
-                    ["Annotation"] = _annotationCodeGenerator
                 }
             };
             contextGenerator.Initialize();

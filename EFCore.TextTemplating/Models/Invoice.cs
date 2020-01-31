@@ -28,7 +28,7 @@ namespace EFCore.TextTemplating.Models
 
         public virtual Customer Customer { get; set; }
 
-        public virtual ICollection<InvoiceLine> InvoiceLine { get; } = new HashSet<InvoiceLine>();
+        public virtual ICollection<InvoiceLine> InvoiceLines { get; } = new HashSet<InvoiceLine>();
 
     }
 }

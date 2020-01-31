@@ -30,11 +30,11 @@ namespace EFCore.TextTemplating.Models
 
         public virtual Genre Genre { get; set; }
 
-        public virtual ICollection<InvoiceLine> InvoiceLine { get; } = new HashSet<InvoiceLine>();
+        public virtual ICollection<InvoiceLine> InvoiceLines { get; } = new HashSet<InvoiceLine>();
 
         public virtual MediaType MediaType { get; set; }
 
-        public virtual ICollection<PlaylistTrack> PlaylistTrack { get; } = new HashSet<PlaylistTrack>();
+        public virtual ICollection<PlaylistTrack> PlaylistTracks { get; } = new HashSet<PlaylistTrack>();
 
     }
 }

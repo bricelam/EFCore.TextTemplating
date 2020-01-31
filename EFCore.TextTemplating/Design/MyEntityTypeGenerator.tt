@@ -9,11 +9,33 @@ using System.ComponentModel.DataAnnotations;
 
 namespace <#= Namespace #>
 {
+<#
+    var entityTypeComment = EntityType.GetComment();
+    if (entityTypeComment != null)
+    {
+#>
+    /// <summary>
+    /// <#= entityTypeComment #>
+    /// </summary>
+<#
+    }
+
+#>
     public partial class <#= EntityType.Name #>
     {
 <#
     foreach (var property in EntityType.GetProperties().OrderBy(p => p["Scaffolding:ColumnOrdinal"]))
     {
+        var propertyComment = property.GetComment();
+        if (propertyComment != null)
+        {
+#>
+        /// <summary>
+        /// <#= propertyComment #>
+        /// </summary>
+<#
+        }
+
         if (!property.IsNullable
             && (!property.ClrType.IsValueType
                 || property.ClrType.IsGenericType

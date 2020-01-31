@@ -38,7 +38,7 @@ namespace EFCore.TextTemplating.Models
 
         public string Email { get; set; }
 
-        public virtual ICollection<Customer> Customer { get; } = new HashSet<Customer>();
+        public virtual ICollection<Customer> Customers { get; } = new HashSet<Customer>();
 
         public virtual ICollection<Employee> InverseReportsToNavigation { get; } = new HashSet<Employee>();
 

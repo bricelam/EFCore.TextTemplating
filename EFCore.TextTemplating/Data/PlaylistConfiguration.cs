@@ -8,6 +8,14 @@ namespace EFCore.TextTemplating.Data
     {
         public void Configure(EntityTypeBuilder<Playlist> builder)
         {
+            builder.ToTable("Playlist");
+
+            builder.Property(e => e.PlaylistId)
+                .ValueGeneratedNever();
+
+            builder.Property(e => e.Name)
+                .HasColumnType("NVARCHAR(120)");
+
         }
     }
 }

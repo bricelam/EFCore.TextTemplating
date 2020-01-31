@@ -35,7 +35,7 @@ namespace EFCore.TextTemplating.Models
 
         public long? SupportRepId { get; set; }
 
-        public virtual ICollection<Invoice> Invoice { get; } = new HashSet<Invoice>();
+        public virtual ICollection<Invoice> Invoices { get; } = new HashSet<Invoice>();
 
         public virtual Employee SupportRep { get; set; }
 

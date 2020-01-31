@@ -15,7 +15,7 @@ namespace EFCore.TextTemplating.Models
 
         public virtual Artist Artist { get; set; }
 
-        public virtual ICollection<Track> Track { get; } = new HashSet<Track>();
+        public virtual ICollection<Track> Tracks { get; } = new HashSet<Track>();
 
     }
 }

@@ -29,12 +29,35 @@ namespace EFCore.TextTemplating.Design
             this.Write("using System;\r\nusing System.Collections.Generic;\r\nusing System.ComponentModel.Dat" +
                     "aAnnotations;\r\n\r\nnamespace ");
             this.Write(this.ToStringHelper.ToStringWithCulture(Namespace));
-            this.Write("\r\n{\r\n    public partial class ");
+            this.Write("\r\n{\r\n");
+
+    var entityTypeComment = EntityType.GetComment();
+    if (entityTypeComment != null)
+    {
+
+            this.Write("    /// <summary>\r\n    /// ");
+            this.Write(this.ToStringHelper.ToStringWithCulture(entityTypeComment));
+            this.Write("\r\n    /// </summary>\r\n");
+
+    }
+
+
+            this.Write("    public partial class ");
             this.Write(this.ToStringHelper.ToStringWithCulture(EntityType.Name));
             this.Write("\r\n    {\r\n");
 
     foreach (var property in EntityType.GetProperties().OrderBy(p => p["Scaffolding:ColumnOrdinal"]))
     {
+        var propertyComment = property.GetComment();
+        if (propertyComment != null)
+        {
+
+            this.Write("        /// <summary>\r\n        /// ");
+            this.Write(this.ToStringHelper.ToStringWithCulture(propertyComment));
+            this.Write("\r\n        /// </summary>\r\n");
+
+        }
+
         if (!property.IsNullable
             && (!property.ClrType.IsValueType
                 || property.ClrType.IsGenericType

@@ -8,6 +8,14 @@ namespace EFCore.TextTemplating.Data
     {
         public void Configure(EntityTypeBuilder<Artist> builder)
         {
+            builder.ToTable("Artist");
+
+            builder.Property(e => e.ArtistId)
+                .ValueGeneratedNever();
+
+            builder.Property(e => e.Name)
+                .HasColumnType("NVARCHAR(120)");
+
         }
     }
 }

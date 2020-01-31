@@ -9,7 +9,6 @@
 // ------------------------------------------------------------------------------
 namespace EFCore.TextTemplating.Design
 {
-    using System.Linq;
     using Microsoft.EntityFrameworkCore.Design;
     using Microsoft.EntityFrameworkCore.Metadata;
     using Microsoft.EntityFrameworkCore.Scaffolding;
@@ -26,8 +25,7 @@ namespace EFCore.TextTemplating.Design
         /// </summary>
         public override string TransformText()
         {
-            this.Write("using System;\r\nusing Microsoft.EntityFrameworkCore;\r\nusing Microsoft.EntityFramew" +
-                    "orkCore.Metadata;\r\nusing ");
+            this.Write("using Microsoft.EntityFrameworkCore;\r\nusing ");
             this.Write(this.ToStringHelper.ToStringWithCulture(ModelNamespace));
             this.Write(";\r\n\r\nnamespace ");
             this.Write(this.ToStringHelper.ToStringWithCulture(Namespace));
@@ -61,39 +59,6 @@ namespace EFCore.TextTemplating.Design
             this.Write(";\r\n\r\n        protected override void OnModelCreating(ModelBuilder modelBuilder)\r\n" +
                     "        {\r\n");
 
-    foreach (var annotation in Model.GetAnnotations())
-    {
-        if (annotation.Name == "ProductVersion"
-            || annotation.Name == "Scaffolding:DatabaseName"
-            || annotation.Name == "Scaffolding:EntityTypeErrors"
-            || annotation.Name.StartsWith(RelationalAnnotationNames.SequencePrefix)
-            || annotation.Value == null
-            || Annotation.IsHandledByConvention(Model, annotation))
-        {
-            continue;
-        }
-
-        var methodCall = Annotation.GenerateFluentApi(Model, annotation);
-        if (methodCall != null)
-        {
-
-            this.Write("            modelBuilder");
-            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Fragment(methodCall)));
-            this.Write(";\r\n");
-
-        }
-        else
-        {
-
-            this.Write("            modelBuilder.HasAnnotation(");
-            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Literal(annotation.Name)));
-            this.Write(", ");
-            this.Write(this.ToStringHelper.ToStringWithCulture(Code.UnknownLiteral(annotation.Value)));
-            this.Write(");\r\n");
-
-        }
-    }
-
     foreach (var entityType in Model.GetEntityTypes())
     {
 
@@ -115,7 +80,6 @@ namespace EFCore.TextTemplating.Design
     public string ConnectionString { get; private set; }
     public ICSharpHelper Code { get; private set; }
     public IProviderConfigurationCodeGenerator ProviderCode { get; private set; }
-    public IAnnotationCodeGenerator Annotation { get; private set; }
 
     public void Initialize()
     {
@@ -126,7 +90,6 @@ namespace EFCore.TextTemplating.Design
         ConnectionString = (string)Session["ConnectionString"];
         Code = (ICSharpHelper)Session["Code"];
         ProviderCode = (IProviderConfigurationCodeGenerator)Session["ProviderCode"];
-        Annotation = (IAnnotationCodeGenerator)Session["Annotation"];
     }
 
     }

@@ -1,8 +1,10 @@
 ﻿<#@ template inherits="MyCodeGeneratorBase" visibility="internal" linePragmas="false" #>
 <#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore.Design" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore.Metadata" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore.Metadata.Conventions" #>
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using <#= ModelNamespace #>;
@@ -14,7 +16,165 @@ namespace <#= Namespace #>
         public void Configure(EntityTypeBuilder<<#= EntityType.Name #>> builder)
         {
 <#
-    // TODO
+    var primaryKey = EntityType.FindPrimaryKey();
+    if (primaryKey == null)
+    {
+#>
+            builder.HasNoKey();
+
+<#
+    }
+    else if (!Enumerable.SequenceEqual(
+        primaryKey.Properties,
+        KeyDiscoveryConvention.DiscoverKeyProperties(
+            (IConventionEntityType)primaryKey.DeclaringEntityType,
+            primaryKey.DeclaringEntityType.GetProperties().Cast<IConventionProperty>())))
+    {
+#>
+            builder.HasKey(<#= Code.Lambda(primaryKey.Properties.Select(p => p.Name).ToList()) #>);
+
+<#
+    }
+
+    var schema = EntityType.GetSchema();
+    var scaffoldSchema = schema != null && schema != EntityType.Model.GetDefaultSchema();
+
+    var tableName = EntityType.GetTableName();
+    var isView = EntityType.FindAnnotation("Relational:ViewDefinition") != null;
+    var scaffoldTable = scaffoldSchema || isView || tableName != (string)EntityType["Scaffolding:DbSetName"];
+
+    if (scaffoldTable)
+    {
+#>
+            builder.<#= isView ? "ToView" : "ToTable" #>(<#= scaffoldSchema ? Code.Literal(schema) + ", " : "" #><#= Code.Literal(tableName) #>);
+
+<#
+    }
+
+    foreach (var property in EntityType.GetProperties())
+    {
+        var originalGenerationEnvironment = GenerationEnvironment;
+        GenerationEnvironment = new StringBuilder();
+
+        var columnName = property.GetColumnName();
+        if (columnName != property.Name)
+        {
+#>
+                .HasColumnName(<#= Code.Literal(columnName) #>)
+<#
+        }
+
+        var columnType = (string)property["Relational:ColumnType"];
+        if (columnType != null)
+        {
+#>
+                .HasColumnType(<#= Code.Literal(columnType) #>)
+<#
+        }
+
+        if (property.IsUnicode() == false)
+        {
+#>
+                .IsUnicode(false)
+<#
+        }
+
+        if (property.IsFixedLength() == true)
+        {
+#>
+                .IsFixedLength()
+<#
+        }
+
+        if (property.GetDefaultValue() != null
+            || property.GetDefaultValueSql() != null)
+        {
+#>
+                .HasDefaultValue()
+<#
+        }
+
+        if (property.GetComputedColumnSql() != null)
+        {
+#>
+                .HasComputedColumnSql(<#= Code.Literal(columnName) #>)
+<#
+        }
+
+        var valueGenerated = property.ValueGenerated;
+        var isRowVersion = false;
+        if (((IConventionProperty)property).GetValueGeneratedConfigurationSource().HasValue
+            && valueGenerated != RelationalValueGenerationConvention.GetValueGenerated(property))
+        {
+            if (valueGenerated == ValueGenerated.OnAddOrUpdate
+                && property.IsConcurrencyToken)
+            {
+                isRowVersion = true;
+#>
+                .IsRowVersion()
+<#
+            }
+            else
+            {
+#>
+                .ValueGenerated<#= valueGenerated #>()
+<#
+            }
+        }
+
+        if (property.IsConcurrencyToken && !isRowVersion)
+        {
+#>
+                .IsConcurrencyToken()
+<#
+        }
+
+        var propertyConfiguration = GenerationEnvironment;
+        GenerationEnvironment = originalGenerationEnvironment;
+
+        if (propertyConfiguration.Length != 0)
+        {
+#>
+            builder.Property(e => e.<#= property.Name #>)
+                <#= propertyConfiguration.ToString().Trim() #>;
+
+<#
+        }
+    }
+
+    foreach (var foreignKey in EntityType.GetForeignKeys())
+    {
+        var originalGenerationEnvironment = GenerationEnvironment;
+        GenerationEnvironment = new StringBuilder();
+
+        if (!foreignKey.PrincipalKey.IsPrimaryKey())
+        {
+#>
+                .HasPrincipalKey<#= foreignKey.IsUnique ? "<" + foreignKey.PrincipalEntityType.Name + ">" : "" #>(<#= Code.Lambda(foreignKey.PrincipalKey.Properties.Select(p => p.Name).ToList()) #>)
+<#
+        }
+
+#>
+                .HasForeignKey<#= foreignKey.IsUnique ? "<" + foreignKey.DeclaringEntityType.Name + ">" : "" #>(<#= Code.Lambda(foreignKey.Properties.Select(p => p.Name).ToList()) #>)
+<#
+
+        var defaultDeleteBehavior = foreignKey.IsRequired ? DeleteBehavior.Cascade : DeleteBehavior.ClientSetNull;
+        if (foreignKey.DeleteBehavior != defaultDeleteBehavior)
+        {
+#>
+                .OnDelete(<#= Code.Literal(foreignKey.DeleteBehavior) #>)
+<#
+        }
+
+        var relationshipConfiguration = GenerationEnvironment;
+        GenerationEnvironment = originalGenerationEnvironment;
+
+#>
+            builder.HasOne(<#= foreignKey.DependentToPrincipal != null ? "d => d." + foreignKey.DependentToPrincipal.Name : "" #>).<#= foreignKey.IsUnique ? "WithOne" : "WithMany" #>(<#= foreignKey.PrincipalToDependent != null ? "p => p." + foreignKey.PrincipalToDependent.Name : "" #>)
+                <#= relationshipConfiguration.ToString().Trim() #>;
+
+<#
+    }
 #>
         }
     }

@@ -8,6 +8,14 @@ namespace EFCore.TextTemplating.Data
     {
         public void Configure(EntityTypeBuilder<MediaType> builder)
         {
+            builder.ToTable("MediaType");
+
+            builder.Property(e => e.MediaTypeId)
+                .ValueGeneratedNever();
+
+            builder.Property(e => e.Name)
+                .HasColumnType("NVARCHAR(120)");
+
         }
     }
 }
