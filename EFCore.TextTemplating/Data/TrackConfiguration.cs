@@ -10,6 +10,9 @@ namespace EFCore.TextTemplating.Data
         {
             builder.ToTable("Track");
 
+            builder.HasIndex(x => x.TrackId)
+                .IsUnique();
+
             builder.Property(e => e.TrackId)
                 .ValueGeneratedNever();
 

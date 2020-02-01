@@ -12,6 +12,9 @@ namespace EFCore.TextTemplating.Data
 
             builder.ToTable("PlaylistTrack");
 
+            builder.HasIndex(x => new { x.PlaylistId, x.TrackId })
+                .IsUnique();
+
             builder.HasOne(d => d.Playlist).WithMany(p => p.PlaylistTracks)
                 .HasForeignKey(x => x.PlaylistId)
                 .OnDelete(DeleteBehavior.ClientSetNull);

@@ -51,6 +51,15 @@ namespace <#= Namespace #>
 <#
     }
 
+    foreach (var index in EntityType.GetIndexes().Where(i => i.IsUnique))
+    {
+#>
+            builder.HasIndex(<#= Code.Lambda(index.Properties.Select(p => p.Name).ToList()) #>)
+                .IsUnique();
+
+<#
+    }
+
     foreach (var property in EntityType.GetProperties())
     {
         var originalGenerationEnvironment = GenerationEnvironment;

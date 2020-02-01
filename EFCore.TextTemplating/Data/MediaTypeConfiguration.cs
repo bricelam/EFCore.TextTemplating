@@ -10,6 +10,9 @@ namespace EFCore.TextTemplating.Data
         {
             builder.ToTable("MediaType");
 
+            builder.HasIndex(x => x.MediaTypeId)
+                .IsUnique();
+
             builder.Property(e => e.MediaTypeId)
                 .ValueGeneratedNever();
 

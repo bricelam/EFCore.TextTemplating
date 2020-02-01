@@ -80,6 +80,15 @@ namespace EFCore.TextTemplating.Design
 
     }
 
+    foreach (var index in EntityType.GetIndexes().Where(i => i.IsUnique))
+    {
+
+            this.Write("            builder.HasIndex(");
+            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Lambda(index.Properties.Select(p => p.Name).ToList())));
+            this.Write(")\r\n                .IsUnique();\r\n\r\n");
+
+    }
+
     foreach (var property in EntityType.GetProperties())
     {
         var originalGenerationEnvironment = GenerationEnvironment;

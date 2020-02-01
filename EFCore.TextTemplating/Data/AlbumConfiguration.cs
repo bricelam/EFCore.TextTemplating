@@ -10,6 +10,9 @@ namespace EFCore.TextTemplating.Data
         {
             builder.ToTable("Album");
 
+            builder.HasIndex(x => x.AlbumId)
+                .IsUnique();
+
             builder.Property(e => e.AlbumId)
                 .ValueGeneratedNever();
 
