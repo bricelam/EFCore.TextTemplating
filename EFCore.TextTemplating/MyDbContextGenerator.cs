@@ -44,18 +44,10 @@ namespace EFCore.TextTemplating
 
     }
 
-    var useProvider = ProviderCode.GenerateUseProvider(
-        ConnectionString,
-        ProviderCode.GenerateProviderOptions());
-    var contextOptions = ProviderCode.GenerateContextOptions();
-    if (contextOptions != null)
-    {
-        useProvider = useProvider.Chain(contextOptions);
-    }
 
             this.Write("\r\n        protected override void OnConfiguring(DbContextOptionsBuilder options)\r" +
                     "\n            => options");
-            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Fragment(useProvider)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Fragment(ProviderCode.GenerateUseProvider(ConnectionString))));
             this.Write(";\r\n\r\n        protected override void OnModelCreating(ModelBuilder modelBuilder)\r\n" +
                     "        {\r\n");
 

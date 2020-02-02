@@ -17,18 +17,10 @@ namespace <#= Namespace #>
 <#
     }
 
-    var useProvider = ProviderCode.GenerateUseProvider(
-        ConnectionString,
-        ProviderCode.GenerateProviderOptions());
-    var contextOptions = ProviderCode.GenerateContextOptions();
-    if (contextOptions != null)
-    {
-        useProvider = useProvider.Chain(contextOptions);
-    }
 #>
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options<#= Code.Fragment(useProvider) #>;
+            => options<#= Code.Fragment(ProviderCode.GenerateUseProvider(ConnectionString)) #>;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

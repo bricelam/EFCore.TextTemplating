@@ -56,7 +56,7 @@ namespace EFCore.TextTemplating
     {
 
             this.Write("            builder.HasKey(");
-            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Lambda(primaryKey.Properties.Select(p => p.Name).ToList())));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Lambda(primaryKey.Properties)));
             this.Write(");\r\n\r\n");
 
     }
@@ -84,7 +84,7 @@ namespace EFCore.TextTemplating
     {
 
             this.Write("            builder.HasIndex(");
-            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Lambda(index.Properties.Select(p => p.Name).ToList())));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Lambda(index.Properties)));
             this.Write(")\r\n                .IsUnique();\r\n\r\n");
 
     }
@@ -201,7 +201,7 @@ namespace EFCore.TextTemplating
             this.Write("                .HasPrincipalKey");
             this.Write(this.ToStringHelper.ToStringWithCulture(foreignKey.IsUnique ? "<" + foreignKey.PrincipalEntityType.Name + ">" : ""));
             this.Write("(");
-            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Lambda(foreignKey.PrincipalKey.Properties.Select(p => p.Name).ToList())));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Lambda(foreignKey.PrincipalKey.Properties)));
             this.Write(")\r\n");
 
         }
@@ -210,7 +210,7 @@ namespace EFCore.TextTemplating
             this.Write("                .HasForeignKey");
             this.Write(this.ToStringHelper.ToStringWithCulture(foreignKey.IsUnique ? "<" + foreignKey.DeclaringEntityType.Name + ">" : ""));
             this.Write("(");
-            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Lambda(foreignKey.Properties.Select(p => p.Name).ToList())));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Code.Lambda(foreignKey.Properties)));
             this.Write(")\r\n");
 
 

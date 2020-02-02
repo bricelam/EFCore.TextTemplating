@@ -31,7 +31,7 @@ namespace <#= Namespace #>
             primaryKey.DeclaringEntityType.GetProperties().Cast<IConventionProperty>())))
     {
 #>
-            builder.HasKey(<#= Code.Lambda(primaryKey.Properties.Select(p => p.Name).ToList()) #>);
+            builder.HasKey(<#= Code.Lambda(primaryKey.Properties) #>);
 
 <#
     }
@@ -54,7 +54,7 @@ namespace <#= Namespace #>
     foreach (var index in EntityType.GetIndexes().Where(i => i.IsUnique))
     {
 #>
-            builder.HasIndex(<#= Code.Lambda(index.Properties.Select(p => p.Name).ToList()) #>)
+            builder.HasIndex(<#= Code.Lambda(index.Properties) #>)
                 .IsUnique();
 
 <#
@@ -159,12 +159,12 @@ namespace <#= Namespace #>
         if (!foreignKey.PrincipalKey.IsPrimaryKey())
         {
 #>
-                .HasPrincipalKey<#= foreignKey.IsUnique ? "<" + foreignKey.PrincipalEntityType.Name + ">" : "" #>(<#= Code.Lambda(foreignKey.PrincipalKey.Properties.Select(p => p.Name).ToList()) #>)
+                .HasPrincipalKey<#= foreignKey.IsUnique ? "<" + foreignKey.PrincipalEntityType.Name + ">" : "" #>(<#= Code.Lambda(foreignKey.PrincipalKey.Properties) #>)
 <#
         }
 
 #>
-                .HasForeignKey<#= foreignKey.IsUnique ? "<" + foreignKey.DeclaringEntityType.Name + ">" : "" #>(<#= Code.Lambda(foreignKey.Properties.Select(p => p.Name).ToList()) #>)
+                .HasForeignKey<#= foreignKey.IsUnique ? "<" + foreignKey.DeclaringEntityType.Name + ">" : "" #>(<#= Code.Lambda(foreignKey.Properties) #>)
 <#
 
         var defaultDeleteBehavior = foreignKey.IsRequired ? DeleteBehavior.Cascade : DeleteBehavior.ClientSetNull;
