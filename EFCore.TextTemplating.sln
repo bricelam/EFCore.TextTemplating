@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28516.95
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chinook", "Chinook\Chinook.csproj", "{A0199902-2017-449B-8108-DC62DD6C94EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChinookApp", "ChinookApp\ChinookApp.csproj", "{A0199902-2017-449B-8108-DC62DD6C94EE}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ChinookDatabase", "ChinookDatabase\ChinookDatabase.sqlproj", "{CCDDCD07-72D2-452C-B0E7-56DB5A12F1EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCore.TextTemplating", "EFCore.TextTemplating\EFCore.TextTemplating.csproj", "{F7C9926C-3A4A-4029-8127-CE42E478BCC3}"
 EndProject
@@ -17,6 +19,12 @@ Global
 		{A0199902-2017-449B-8108-DC62DD6C94EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0199902-2017-449B-8108-DC62DD6C94EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0199902-2017-449B-8108-DC62DD6C94EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCDDCD07-72D2-452C-B0E7-56DB5A12F1EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCDDCD07-72D2-452C-B0E7-56DB5A12F1EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCDDCD07-72D2-452C-B0E7-56DB5A12F1EB}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{CCDDCD07-72D2-452C-B0E7-56DB5A12F1EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCDDCD07-72D2-452C-B0E7-56DB5A12F1EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCDDCD07-72D2-452C-B0E7-56DB5A12F1EB}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{F7C9926C-3A4A-4029-8127-CE42E478BCC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F7C9926C-3A4A-4029-8127-CE42E478BCC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7C9926C-3A4A-4029-8127-CE42E478BCC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
