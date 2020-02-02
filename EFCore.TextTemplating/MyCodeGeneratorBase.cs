@@ -13,14 +13,41 @@ namespace EFCore.TextTemplating
         bool _endsWithNewline;
         readonly List<int> _indentLengths = new List<int>();
 
+        /// <summary>
+        /// Current transformation session
+        /// </summary>
         public virtual IDictionary<string, object> Session { get; set; }
 
+        /// <summary>
+        /// The string builder that generation-time code is using to assemble generated output
+        /// </summary>
         protected StringBuilder GenerationEnvironment { get; set; } = new StringBuilder();
 
+        /// <summary>
+        /// The error collection for the generation process
+        /// </summary>
+        protected CompilerErrorCollection Errors { get; } = new CompilerErrorCollection();
+
+        /// <summary>
+        /// Initialize the template
+        /// </summary>
+        public virtual void Initialize()
+        {
+        }
+
+        /// <summary>
+        /// Create the template output
+        /// </summary>
         public abstract string TransformText();
 
+        /// <summary>
+        /// Gets the current indent we use when adding lines to the output
+        /// </summary>
         protected string CurrentIndent { get; private set; } = "";
 
+        /// <summary>
+        /// Write text directly into the generated output
+        /// </summary>
         protected void Write(string textToAppend)
         {
             if (string.IsNullOrEmpty(textToAppend))
@@ -64,6 +91,9 @@ namespace EFCore.TextTemplating
             }
         }
 
+        /// <summary>
+        /// Write text directly into the generated output
+        /// </summary>
         protected void WriteLine(string textToAppend)
         {
             Write(textToAppend);
@@ -71,12 +101,21 @@ namespace EFCore.TextTemplating
             _endsWithNewline = true;
         }
 
+        /// <summary>
+        /// Write formatted text directly into the generated output
+        /// </summary>
         protected void Write(string format, params object[] args)
             => Write(string.Format(CultureInfo.CurrentCulture, format, args));
 
+        /// <summary>
+        /// Write formatted text directly into the generated output
+        /// </summary>
         protected void WriteLine(string format, params object[] args)
             => WriteLine(string.Format(CultureInfo.CurrentCulture, format, args));
 
+        /// <summary>
+        /// Increase the indent
+        /// </summary>
         protected void PushIndent(string indent)
         {
             if (indent == null)
@@ -88,6 +127,9 @@ namespace EFCore.TextTemplating
             _indentLengths.Add(indent.Length);
         }
 
+        /// <summary>
+        /// Remove the last indent that was added with PushIndent
+        /// </summary>
         protected string PopIndent()
         {
             var returnValue = string.Empty;
@@ -107,16 +149,25 @@ namespace EFCore.TextTemplating
             return returnValue;
         }
 
+        /// <summary>
+        /// Remove any indentation
+        /// </summary>
         protected void ClearIndent()
         {
             _indentLengths.Clear();
             CurrentIndent = string.Empty;
         }
 
+        /// <summary>
+        /// Utility class to produce culture-oriented representation of an object as a string.
+        /// </summary>
         protected class ToStringInstanceHelper
         {
             IFormatProvider _formatProvider = CultureInfo.InvariantCulture;
 
+            /// <summary>
+            /// Gets or sets format provider to be used by ToStringWithCulture method.
+            /// </summary>
             public IFormatProvider FormatProvider
             {
                 get => _formatProvider;
@@ -129,6 +180,9 @@ namespace EFCore.TextTemplating
                 }
             }
 
+            /// <summary>
+            /// This is called from the compile/run appdomain to convert objects within an expression block to a string
+            /// </summary>
             public string ToStringWithCulture(object objectToConvert)
             {
                 if (objectToConvert == null)
@@ -142,6 +196,23 @@ namespace EFCore.TextTemplating
             }
         }
 
+        /// <summary>
+        /// Helper to produce culture-oriented representation of an object as a string
+        /// </summary>
         protected ToStringInstanceHelper ToStringHelper { get; } = new ToStringInstanceHelper();
+
+        protected class CompilerErrorCollection
+        {
+            public bool HasErrors => false;
+        }
+    }
+}
+
+namespace System.Runtime.Remoting.Messaging
+{
+    static class CallContext
+    {
+        public static object LogicalGetData(string _)
+            => null;
     }
 }

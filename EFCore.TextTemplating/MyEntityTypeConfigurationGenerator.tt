@@ -1,4 +1,10 @@
 ﻿<#@ template inherits="MyCodeGeneratorBase" visibility="internal" linePragmas="false" #>
+<#@ parameter name="EntityType" type="Microsoft.EntityFrameworkCore.Metadata.IEntityType" #>
+<#@ parameter name="ModelNamespace" type="System.String" #>
+<#@ parameter name="Namespace" type="System.String" #>
+<#@ parameter name="UseDataAnnotations" type="System.Boolean" #>
+<#@ parameter name="Code" type="Microsoft.EntityFrameworkCore.Design.ICSharpHelper" #>
+<#@ parameter name="AnnotationCode" type="Microsoft.EntityFrameworkCore.Design.IAnnotationCodeGenerator" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore" #>
@@ -138,14 +144,14 @@ namespace <#= Namespace #>
 <#
         }
 
-        var propertyConfiguration = GenerationEnvironment;
+        var propertyConfiguration = GenerationEnvironment.ToString();
         GenerationEnvironment = originalGenerationEnvironment;
 
         if (propertyConfiguration.Length != 0)
         {
 #>
             builder.Property(e => e.<#= property.Name #>)
-                <#= propertyConfiguration.ToString().Trim() #>;
+                <#= propertyConfiguration.Trim() #>;
 
 <#
         }
@@ -175,12 +181,12 @@ namespace <#= Namespace #>
 <#
         }
 
-        var relationshipConfiguration = GenerationEnvironment;
+        var relationshipConfiguration = GenerationEnvironment.ToString();
         GenerationEnvironment = originalGenerationEnvironment;
 
 #>
             builder.HasOne(<#= foreignKey.DependentToPrincipal != null ? "d => d." + foreignKey.DependentToPrincipal.Name : "" #>).<#= foreignKey.IsUnique ? "WithOne" : "WithMany" #>(<#= foreignKey.PrincipalToDependent != null ? "p => p." + foreignKey.PrincipalToDependent.Name : "" #>)
-                <#= relationshipConfiguration.ToString().Trim() #>;
+                <#= relationshipConfiguration.Trim() #>;
 
 <#
     }
@@ -188,22 +194,3 @@ namespace <#= Namespace #>
         }
     }
 }
-<#+
-    // NB: T4 parameter directives aren't compatible with .NET Standard
-    public IEntityType EntityType { get; private set; }
-    public string ModelNamespace { get; private set; }
-    public string Namespace { get; private set; }
-    public bool UseDataAnnotations { get; private set; }
-    public ICSharpHelper Code { get; private set; }
-    public IAnnotationCodeGenerator AnnotationCode { get; private set; }
-
-    public void Initialize()
-    {
-        EntityType = (IEntityType)Session["EntityType"];
-        ModelNamespace = (string)Session["ModelNamespace"];
-        Namespace = (string)Session["Namespace"];
-        UseDataAnnotations = (bool)Session["UseDataAnnotations"];
-        Code = (ICSharpHelper)Session["Code"];
-        AnnotationCode = (IAnnotationCodeGenerator)Session["AnnotationCode"];
-    }
-#>

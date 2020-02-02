@@ -175,7 +175,7 @@ namespace EFCore.TextTemplating
 
         }
 
-        var propertyConfiguration = GenerationEnvironment;
+        var propertyConfiguration = GenerationEnvironment.ToString();
         GenerationEnvironment = originalGenerationEnvironment;
 
         if (propertyConfiguration.Length != 0)
@@ -184,7 +184,7 @@ namespace EFCore.TextTemplating
             this.Write("            builder.Property(e => e.");
             this.Write(this.ToStringHelper.ToStringWithCulture(property.Name));
             this.Write(")\r\n                ");
-            this.Write(this.ToStringHelper.ToStringWithCulture(propertyConfiguration.ToString().Trim()));
+            this.Write(this.ToStringHelper.ToStringWithCulture(propertyConfiguration.Trim()));
             this.Write(";\r\n\r\n");
 
         }
@@ -224,7 +224,7 @@ namespace EFCore.TextTemplating
 
         }
 
-        var relationshipConfiguration = GenerationEnvironment;
+        var relationshipConfiguration = GenerationEnvironment.ToString();
         GenerationEnvironment = originalGenerationEnvironment;
 
 
@@ -235,7 +235,7 @@ namespace EFCore.TextTemplating
             this.Write("(");
             this.Write(this.ToStringHelper.ToStringWithCulture(foreignKey.PrincipalToDependent != null ? "p => p." + foreignKey.PrincipalToDependent.Name : ""));
             this.Write(")\r\n                ");
-            this.Write(this.ToStringHelper.ToStringWithCulture(relationshipConfiguration.ToString().Trim()));
+            this.Write(this.ToStringHelper.ToStringWithCulture(relationshipConfiguration.Trim()));
             this.Write(";\r\n\r\n");
 
     }
@@ -244,23 +244,182 @@ namespace EFCore.TextTemplating
             return this.GenerationEnvironment.ToString();
         }
 
-    // NB: T4 parameter directives aren't compatible with .NET Standard
-    public IEntityType EntityType { get; private set; }
-    public string ModelNamespace { get; private set; }
-    public string Namespace { get; private set; }
-    public bool UseDataAnnotations { get; private set; }
-    public ICSharpHelper Code { get; private set; }
-    public IAnnotationCodeGenerator AnnotationCode { get; private set; }
+private global::Microsoft.EntityFrameworkCore.Metadata.IEntityType _EntityTypeField;
 
-    public void Initialize()
+/// <summary>
+/// Access the EntityType parameter of the template.
+/// </summary>
+private global::Microsoft.EntityFrameworkCore.Metadata.IEntityType EntityType
+{
+    get
     {
-        EntityType = (IEntityType)Session["EntityType"];
-        ModelNamespace = (string)Session["ModelNamespace"];
-        Namespace = (string)Session["Namespace"];
-        UseDataAnnotations = (bool)Session["UseDataAnnotations"];
-        Code = (ICSharpHelper)Session["Code"];
-        AnnotationCode = (IAnnotationCodeGenerator)Session["AnnotationCode"];
+        return this._EntityTypeField;
     }
+}
+
+private string _ModelNamespaceField;
+
+/// <summary>
+/// Access the ModelNamespace parameter of the template.
+/// </summary>
+private string ModelNamespace
+{
+    get
+    {
+        return this._ModelNamespaceField;
+    }
+}
+
+private string _NamespaceField;
+
+/// <summary>
+/// Access the Namespace parameter of the template.
+/// </summary>
+private string Namespace
+{
+    get
+    {
+        return this._NamespaceField;
+    }
+}
+
+private bool _UseDataAnnotationsField;
+
+/// <summary>
+/// Access the UseDataAnnotations parameter of the template.
+/// </summary>
+private bool UseDataAnnotations
+{
+    get
+    {
+        return this._UseDataAnnotationsField;
+    }
+}
+
+private global::Microsoft.EntityFrameworkCore.Design.ICSharpHelper _CodeField;
+
+/// <summary>
+/// Access the Code parameter of the template.
+/// </summary>
+private global::Microsoft.EntityFrameworkCore.Design.ICSharpHelper Code
+{
+    get
+    {
+        return this._CodeField;
+    }
+}
+
+private global::Microsoft.EntityFrameworkCore.Design.IAnnotationCodeGenerator _AnnotationCodeField;
+
+/// <summary>
+/// Access the AnnotationCode parameter of the template.
+/// </summary>
+private global::Microsoft.EntityFrameworkCore.Design.IAnnotationCodeGenerator AnnotationCode
+{
+    get
+    {
+        return this._AnnotationCodeField;
+    }
+}
+
+
+/// <summary>
+/// Initialize the template
+/// </summary>
+public override void Initialize()
+{
+    base.Initialize();
+    if ((this.Errors.HasErrors == false))
+    {
+bool EntityTypeValueAcquired = false;
+if (this.Session.ContainsKey("EntityType"))
+{
+    this._EntityTypeField = ((global::Microsoft.EntityFrameworkCore.Metadata.IEntityType)(this.Session["EntityType"]));
+    EntityTypeValueAcquired = true;
+}
+if ((EntityTypeValueAcquired == false))
+{
+    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("EntityType");
+    if ((data != null))
+    {
+        this._EntityTypeField = ((global::Microsoft.EntityFrameworkCore.Metadata.IEntityType)(data));
+    }
+}
+bool ModelNamespaceValueAcquired = false;
+if (this.Session.ContainsKey("ModelNamespace"))
+{
+    this._ModelNamespaceField = ((string)(this.Session["ModelNamespace"]));
+    ModelNamespaceValueAcquired = true;
+}
+if ((ModelNamespaceValueAcquired == false))
+{
+    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("ModelNamespace");
+    if ((data != null))
+    {
+        this._ModelNamespaceField = ((string)(data));
+    }
+}
+bool NamespaceValueAcquired = false;
+if (this.Session.ContainsKey("Namespace"))
+{
+    this._NamespaceField = ((string)(this.Session["Namespace"]));
+    NamespaceValueAcquired = true;
+}
+if ((NamespaceValueAcquired == false))
+{
+    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("Namespace");
+    if ((data != null))
+    {
+        this._NamespaceField = ((string)(data));
+    }
+}
+bool UseDataAnnotationsValueAcquired = false;
+if (this.Session.ContainsKey("UseDataAnnotations"))
+{
+    this._UseDataAnnotationsField = ((bool)(this.Session["UseDataAnnotations"]));
+    UseDataAnnotationsValueAcquired = true;
+}
+if ((UseDataAnnotationsValueAcquired == false))
+{
+    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("UseDataAnnotations");
+    if ((data != null))
+    {
+        this._UseDataAnnotationsField = ((bool)(data));
+    }
+}
+bool CodeValueAcquired = false;
+if (this.Session.ContainsKey("Code"))
+{
+    this._CodeField = ((global::Microsoft.EntityFrameworkCore.Design.ICSharpHelper)(this.Session["Code"]));
+    CodeValueAcquired = true;
+}
+if ((CodeValueAcquired == false))
+{
+    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("Code");
+    if ((data != null))
+    {
+        this._CodeField = ((global::Microsoft.EntityFrameworkCore.Design.ICSharpHelper)(data));
+    }
+}
+bool AnnotationCodeValueAcquired = false;
+if (this.Session.ContainsKey("AnnotationCode"))
+{
+    this._AnnotationCodeField = ((global::Microsoft.EntityFrameworkCore.Design.IAnnotationCodeGenerator)(this.Session["AnnotationCode"]));
+    AnnotationCodeValueAcquired = true;
+}
+if ((AnnotationCodeValueAcquired == false))
+{
+    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("AnnotationCode");
+    if ((data != null))
+    {
+        this._AnnotationCodeField = ((global::Microsoft.EntityFrameworkCore.Design.IAnnotationCodeGenerator)(data));
+    }
+}
+
+
+    }
+}
+
 
     }
 }

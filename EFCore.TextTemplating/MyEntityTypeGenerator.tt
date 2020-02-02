@@ -1,8 +1,10 @@
 ﻿<#@ template inherits="MyCodeGeneratorBase" visibility="internal" linePragmas="false" #>
+<#@ parameter name="EntityType" type="Microsoft.EntityFrameworkCore.Metadata.IEntityType" #>
+<#@ parameter name="Namespace" type="System.String" #>
+<#@ parameter name="UseDataAnnotations" type="System.Boolean" #>
+<#@ parameter name="Code" type="Microsoft.EntityFrameworkCore.Design.ICSharpHelper" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore" #>
-<#@ import namespace="Microsoft.EntityFrameworkCore.Design" #>
-<#@ import namespace="Microsoft.EntityFrameworkCore.Metadata" #>
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -91,18 +93,3 @@ namespace <#= Namespace #>
 #>
     }
 }
-<#+
-    // NB: T4 parameter directives aren't compatible with .NET Standard
-    public IEntityType EntityType { get; private set; }
-    public string Namespace { get; private set; }
-    public bool UseDataAnnotations { get; private set; }
-    public ICSharpHelper Code { get; private set; }
-
-    public void Initialize()
-    {
-        EntityType = (IEntityType)Session["EntityType"];
-        Namespace = (string)Session["Namespace"];
-        UseDataAnnotations = (bool)Session["UseDataAnnotations"];
-        Code = (ICSharpHelper)Session["Code"];
-    }
-#>

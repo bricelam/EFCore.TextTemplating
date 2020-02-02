@@ -8,7 +8,7 @@ The templates in this repo are merely a starting point. Feel free to tweak them 
 
 ## API Reference
 
-In addition to all the usual [T4 goodness](https://docs.microsoft.com/visualstudio/modeling/code-generation-and-t4-text-templates), the following helpers are also available.
+In addition to all [the usual T4 goodness](https://docs.microsoft.com/visualstudio/modeling/code-generation-and-t4-text-templates), the following helpers are also available.
 
 ### Code
 

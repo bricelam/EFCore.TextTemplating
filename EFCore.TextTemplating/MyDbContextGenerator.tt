@@ -1,6 +1,14 @@
 ﻿<#@ template inherits="MyCodeGeneratorBase" visibility="internal" linePragmas="false" #>
-<#@ import namespace="Microsoft.EntityFrameworkCore.Design" #>
-<#@ import namespace="Microsoft.EntityFrameworkCore.Metadata" #>
+<#@ parameter name="Model" type="Microsoft.EntityFrameworkCore.Metadata.IModel" #>
+<#@ parameter name="ModelNamespace" type="System.String" #>
+<#@ parameter name="Namespace" type="System.String" #>
+<#@ parameter name="ContextName" type="System.String" #>
+<#@ parameter name="ConnectionString" type="System.String" #>
+<#@ parameter name="SuppressConnectionStringWarning" type="System.Boolean" #>
+<#@ parameter name="UseDataAnnotations" type="System.Boolean" #>
+<#@ parameter name="Code" type="Microsoft.EntityFrameworkCore.Design.ICSharpHelper" #>
+<#@ parameter name="ProviderCode" type="Microsoft.EntityFrameworkCore.Scaffolding.IProviderConfigurationCodeGenerator" #>
+<#@ parameter name="AnnotationCode" type="Microsoft.EntityFrameworkCore.Design.IAnnotationCodeGenerator" #>
 <#@ import namespace="Microsoft.EntityFrameworkCore.Scaffolding" #>
 using Microsoft.EntityFrameworkCore;
 using <#= ModelNamespace #>;
@@ -35,30 +43,3 @@ namespace <#= Namespace #>
         }
     }
 }
-<#+
-    // NB: T4 parameter directives aren't compatible with .NET Standard
-    public IModel Model { get; private set; }
-    public string ModelNamespace { get; private set; }
-    public string Namespace { get; private set; }
-    public string ContextName { get; private set; }
-    public string ConnectionString { get; private set; }
-    public bool SuppressConnectionStringWarning { get; private set; }
-    public bool UseDataAnnotations { get; private set; }
-    public ICSharpHelper Code { get; private set; }
-    public IProviderConfigurationCodeGenerator ProviderCode { get; private set; }
-    public IAnnotationCodeGenerator AnnotationCode { get; private set; }
-
-    public void Initialize()
-    {
-        Model = (IModel)Session["Model"];
-        ModelNamespace = (string)Session["ModelNamespace"];
-        Namespace = (string)Session["Namespace"];
-        ContextName = (string)Session["ContextName"];
-        ConnectionString = (string)Session["ConnectionString"];
-        SuppressConnectionStringWarning = (bool)Session["SuppressConnectionStringWarning"];
-        UseDataAnnotations = (bool)Session["UseDataAnnotations"];
-        Code = (ICSharpHelper)Session["Code"];
-        ProviderCode = (IProviderConfigurationCodeGenerator)Session["ProviderCode"];
-        AnnotationCode = (IAnnotationCodeGenerator)Session["AnnotationCode"];
-    }
-#>
