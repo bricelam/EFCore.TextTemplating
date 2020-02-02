@@ -1,38 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bricelam.EntityFrameworkCore.Pluralizer" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.1">
       <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Chinook.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Design\MyDbContextGenerator.tt">
+    <None Update="MyDbContextGenerator.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>MyDbContextGenerator.cs</LastGenOutput>
     </None>
-    <None Update="Design\MyEntityTypeConfigurationGenerator.tt">
+    <None Update="MyEntityTypeConfigurationGenerator.tt">
       <LastGenOutput>MyEntityTypeConfigurationGenerator.cs</LastGenOutput>
       <Generator>TextTemplatingFilePreprocessor</Generator>
     </None>
-    <None Update="Design\MyEntityTypeGenerator.tt">
+    <None Update="MyEntityTypeGenerator.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>MyEntityTypeGenerator.cs</LastGenOutput>
     </None>
@@ -43,17 +30,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Design\MyDbContextGenerator.cs">
+    <Compile Update="MyDbContextGenerator.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>MyDbContextGenerator.tt</DependentUpon>
     </Compile>
-    <Compile Update="Design\MyEntityTypeGenerator.cs">
+    <Compile Update="MyEntityTypeGenerator.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>MyEntityTypeGenerator.tt</DependentUpon>
     </Compile>
-    <Compile Update="Design\MyEntityTypeConfigurationGenerator.cs">
+    <Compile Update="MyEntityTypeConfigurationGenerator.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>MyEntityTypeConfigurationGenerator.tt</DependentUpon>

@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28516.95
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chinook", "Chinook\Chinook.csproj", "{A0199902-2017-449B-8108-DC62DD6C94EE}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCore.TextTemplating", "EFCore.TextTemplating\EFCore.TextTemplating.csproj", "{F7C9926C-3A4A-4029-8127-CE42E478BCC3}"
 EndProject
 Global
@@ -11,6 +13,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A0199902-2017-449B-8108-DC62DD6C94EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0199902-2017-449B-8108-DC62DD6C94EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0199902-2017-449B-8108-DC62DD6C94EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0199902-2017-449B-8108-DC62DD6C94EE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F7C9926C-3A4A-4029-8127-CE42E478BCC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F7C9926C-3A4A-4029-8127-CE42E478BCC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7C9926C-3A4A-4029-8127-CE42E478BCC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
