@@ -8,9 +8,9 @@ Project | Description
 --- | ---
 ChinookApp | An example app containing the scaffolded DbContext type, configuration, and entity types
 ChinookDatabase | The database project for our example app
-EFCore.TextTemplating | Contains the T4 templates and required plumbing to hook them into EF Core. Copy this project into your own solution to get started.
+EFCore.TextTemplating | Contains the T4 templates and required plumbing to hook them into EF Core. **Copy this project into your own solution to get started**
 
-ChinookApp references EFCore.TextTemplating and contains an assembly-level attribute that EF Core uses to discover its design-time services. Your app will need to do the same:
+ChinookApp references EFCore.TextTemplating and contains an assembly-level attribute that EF Core uses to discover its design-time services. **Your app will need to do this too:**
 
 ```cs
 [assembly: DesignTimeServicesReference(
@@ -21,9 +21,9 @@ ChinookApp also references the EF Core tools and [my pluralizer extension](https
 
 EFCore.TextTemplating contains three templates: one for scaffolding the DbContext, one for the IEntityTypeConfiguration implementations, and one for the entity types.
 
-The templates in this repo are merely a starting point. Feel free to tweak them to your heart's content. The resulting code is a little ugly, but I refrained from adding formatting code to keep the templates as simple as possible. I scaffold the code I would want to use, so only the parts of the model that actually affect EF Core behavior are actually scaffolded. Things like sequences, constraint names, and non-unique indexes are ignored.
+The templates in this repo are merely a starting point. Feel free to tweak them to your heart's content. The resulting code is a little ugly, but I refrained from adding formatting code to keep the templates as simple as possible. I scaffold the code I would want to use, so only the parts of the model that actually affect EF Core behavior are scaffolded. Things like sequences, constraint names, and non-unique indexes are ignored.
 
-Warning, staring directly at a T4 template without syntax highlighting may hurt your eyes. I recommend using the [Devart T4 Editor](https://marketplace.visualstudio.com/items?itemName=DevartSoftware.DevartT4EditorforVisualStudio) for Visual Studio or [T4 Support by Zachary Becknell](https://marketplace.visualstudio.com/items?itemName=zbecknell.t4-support) for VS Code.
+⚠ Warning, staring directly at a T4 template without syntax highlighting may hurt your eyes. I recommend using the [Devart T4 Editor](https://marketplace.visualstudio.com/items?itemName=DevartSoftware.DevartT4EditorforVisualStudio) for Visual Studio or [T4 Support by Zachary Becknell](https://marketplace.visualstudio.com/items?itemName=zbecknell.t4-support) for VS Code.
 
 If you're using Visual Studio, merely saving the template files is enough.
 
@@ -60,7 +60,7 @@ In addition to [all the usual T4 goodness](https://docs.microsoft.com/visualstud
 
 Method | Description
 --- | ---
-AnnotationCode.IsHandledByConvention | Gets a value indicating whether the annotation would be handled by convention. If so, generating code for it is unnecessary.
+AnnotationCode.IsHandledByConvention | Gets a value indicating whether the annotation would be handled by convention. If so, generating code is unnecessary
 AnnotationCode.GenerateFluentApi | Generates provider-specific fluent API for the given annotation (like `.IsClustered()`)
 Code.Fragment | Generates code from fragments returned by the `ProviderCode` and `AnnotationCode` helpers
 Code.Identifier | Generates a valid identifier unique within the given scope
