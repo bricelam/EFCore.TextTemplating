@@ -34,6 +34,14 @@ namespace EFCore.TextTemplating
         {
             var resultingFiles = new ScaffoldedModel();
 
+            var connectionString = options.ConnectionString;
+
+            // HACK: Work around dotnet/efcore#19799
+            if (File.Exists(connectionString))
+            {
+                connectionString = "Data Source=(local);Initial Catalog=" + (string)model["Scaffolding:DatabaseName"];
+            }
+
             var contextGenerator = new MyDbContextGenerator
             {
                 Session = new Dictionary<string, object>
@@ -42,7 +50,7 @@ namespace EFCore.TextTemplating
                     ["ModelNamespace"] = options.ModelNamespace,
                     ["Namespace"] = options.ContextNamespace,
                     ["ContextName"] = options.ContextName,
-                    ["ConnectionString"] = options.ConnectionString,
+                    ["ConnectionString"] = connectionString,
                     ["SuppressConnectionStringWarning"] = options.SuppressConnectionStringWarning,
                     ["UseDataAnnotations"] = options.UseDataAnnotations,
 

@@ -17,7 +17,7 @@ ChinookApp references EFCore.TextTemplating and contains an assembly-level attri
     "EFCore.TextTemplating.DesignTimeServices, EFCore.TextTemplating")]
 ```
 
-ChinookApp also references the EF Core tools and [my pluralizer extension](https://github.com/bricelam/EFCore.Pluralizer) to enhance the scaffolded code.
+ChinookApp also references the EF Core tools and [my pluralizer extension](https://github.com/bricelam/EFCore.Pluralizer) to enhance the scaffolded code and ErikEJ.EntityFrameworkCore.SqlServer.Dacpac from the [EF Core Power Tools](https://github.com/ErikEJ/EFCorePowerTools) to reverese engineer directly from a DACPAC.
 
 EFCore.TextTemplating contains three templates: one for scaffolding [the DbContext](EFCore.TextTemplating/MyDbContextGenerator.tt), one for [the IEntityTypeConfiguration](EFCore.TextTemplating/MyEntityTypeConfigurationGenerator.tt) implementations, and one for [the entity types](EFCore.TextTemplating/MyEntityTypeGenerator.tt).
 
@@ -38,8 +38,8 @@ Reverse engineering the model can be done in [the normal way](https://docs.micro
 
 ```sh
 dotnet ef dbcontext scaffold \
-    "Data Source=(localdb)\ProjectsV13;Initial Catalog=ChinookDatabase" \
-    Microsoft.EntityFrameworkCore.SqlServer \
+    ../ChinookDatabase/bin/Debug/ChinookDatabase.dacpac \
+    ErikEJ.EntityFrameworkCore.SqlServer.Dacpac \
     --output-dir Models \
     --context-dir Data \
     --force
@@ -47,8 +47,8 @@ dotnet ef dbcontext scaffold \
 or
 ```ps1
 Scaffold-DbContext `
-    "Data Source=(localdb)\ProjectsV13;Initial Catalog=ChinookDatabase" `
-    Microsoft.EntityFrameworkCore.SqlServer `
+    ..\ChinookDatabase\bin\Debug\ChinookDatabase.dacpac `
+    ErikEJ.EntityFrameworkCore.SqlServer.Dacpac `
     -OutputDir Models `
     -ContextDir Data `
     -Force

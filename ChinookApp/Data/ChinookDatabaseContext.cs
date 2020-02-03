@@ -18,7 +18,7 @@ namespace ChinookApp.Data
         public virtual DbSet<Track> Tracks { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlServer("Data Source=(localdb)\\ProjectsV13;Initial Catalog=ChinookDatabase");
+            => options.UseSqlServer("Data Source=(local);Initial Catalog=ChinookDatabase");
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
