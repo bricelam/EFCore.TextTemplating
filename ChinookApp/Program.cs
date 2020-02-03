@@ -7,9 +7,8 @@ namespace ChinookApp
     {
         static void Main()
         {
-            // Scaffold-DbContext 'Data Source=(localdb)\ProjectsV13;Initial Catalog=ChinookDatabase' Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -ContextDir Data -Force
+            using var db = new ChinookDatabaseContext();
 
-            var db = new ChinookDatabaseContext();
             foreach (var artist in db.Artists)
             {
                 Console.WriteLine(artist.Name);
