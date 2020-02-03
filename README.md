@@ -19,11 +19,11 @@ ChinookApp references EFCore.TextTemplating and contains an assembly-level attri
 
 ChinookApp also references the EF Core tools and [my pluralizer extension](https://github.com/bricelam/EFCore.Pluralizer) to enhance the scaffolded code.
 
-EFCore.TextTemplating contains three templates: one for scaffolding the DbContext, one for the IEntityTypeConfiguration implementations, and one for the entity types.
+EFCore.TextTemplating contains three templates: one for scaffolding [the DbContext](EFCore.TextTemplating/MyDbContextGenerator.tt), one for [the IEntityTypeConfiguration](EFCore.TextTemplating/MyEntityTypeConfigurationGenerator.tt) implementations, and one for [the entity types](EFCore.TextTemplating/MyEntityTypeGenerator.tt).
 
 The templates in this repo are merely a starting point. Feel free to tweak them to your heart's content. The resulting code is a little ugly, but I refrained from adding formatting code to keep the templates as simple as possible. I scaffold the code I would want to use, so only the parts of the model that actually affect EF Core behavior are scaffolded. Things like sequences, constraint names, and non-unique indexes are ignored.
 
-⚠ **Warning!** Staring directly at a T4 template without syntax highlighting may hurt your eyes. I recommend using the [Devart T4 Editor](https://marketplace.visualstudio.com/items?itemName=DevartSoftware.DevartT4EditorforVisualStudio) for Visual Studio or [T4 Support by Zachary Becknell](https://marketplace.visualstudio.com/items?itemName=zbecknell.t4-support) for VS Code.
+⚠**Warning!** Staring directly at a T4 template without syntax highlighting may hurt your eyes. I recommend using the [Devart T4 Editor](https://marketplace.visualstudio.com/items?itemName=DevartSoftware.DevartT4EditorforVisualStudio) for Visual Studio or [T4 Support by Zachary Becknell](https://marketplace.visualstudio.com/items?itemName=zbecknell.t4-support) for VS Code.
 
 If you're using Visual Studio, merely saving the template files is enough.
 
