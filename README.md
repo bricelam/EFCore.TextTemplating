@@ -8,9 +8,9 @@ Project | Description
 --- | ---
 ChinookApp | An example app containing the scaffolded DbContext type, configuration, and entity types
 ChinookDatabase | The database project for our example app
-EFCore.TextTemplating | Contains the T4 templates and required plumbing to hook them into EF Core. **Copy this project into your own solution to get started**
+EFCore.TextTemplating | Contains the T4 templates and required plumbing to hook them into EF Core.<br />**Copy into your solution to get started**
 
-ChinookApp references EFCore.TextTemplating and contains an assembly-level attribute that EF Core uses to discover its design-time services. **Your app will need to do this too:**
+ChinookApp references EFCore.TextTemplating and contains an assembly-level attribute that EF Core uses to discover its design-time services. **Your app needs to do this too:**
 
 ```cs
 [assembly: DesignTimeServicesReference(
@@ -23,7 +23,7 @@ EFCore.TextTemplating contains three templates: one for scaffolding the DbContex
 
 The templates in this repo are merely a starting point. Feel free to tweak them to your heart's content. The resulting code is a little ugly, but I refrained from adding formatting code to keep the templates as simple as possible. I scaffold the code I would want to use, so only the parts of the model that actually affect EF Core behavior are scaffolded. Things like sequences, constraint names, and non-unique indexes are ignored.
 
-⚠ Warning, staring directly at a T4 template without syntax highlighting may hurt your eyes. I recommend using the [Devart T4 Editor](https://marketplace.visualstudio.com/items?itemName=DevartSoftware.DevartT4EditorforVisualStudio) for Visual Studio or [T4 Support by Zachary Becknell](https://marketplace.visualstudio.com/items?itemName=zbecknell.t4-support) for VS Code.
+⚠ **Warning!** Staring directly at a T4 template without syntax highlighting may hurt your eyes. I recommend using the [Devart T4 Editor](https://marketplace.visualstudio.com/items?itemName=DevartSoftware.DevartT4EditorforVisualStudio) for Visual Studio or [T4 Support by Zachary Becknell](https://marketplace.visualstudio.com/items?itemName=zbecknell.t4-support) for VS Code.
 
 If you're using Visual Studio, merely saving the template files is enough.
 
