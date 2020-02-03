@@ -10,6 +10,7 @@ namespace EFCore.TextTemplating
     /// </summary>
     abstract class MyCodeGeneratorBase
     {
+        StringBuilder _generationEnvironment;
         bool _endsWithNewline;
         readonly List<int> _indentLengths = new List<int>();
 
@@ -21,7 +22,11 @@ namespace EFCore.TextTemplating
         /// <summary>
         /// The string builder that generation-time code is using to assemble generated output
         /// </summary>
-        protected StringBuilder GenerationEnvironment { get; set; } = new StringBuilder();
+        protected StringBuilder GenerationEnvironment
+        {
+            get => _generationEnvironment ??= new StringBuilder();
+            set => _generationEnvironment = value;
+        }
 
         /// <summary>
         /// The error collection for the generation process
@@ -112,6 +117,12 @@ namespace EFCore.TextTemplating
         /// </summary>
         protected void WriteLine(string format, params object[] args)
             => WriteLine(string.Format(CultureInfo.CurrentCulture, format, args));
+
+        /// <summary>
+        /// Raise an error
+        /// </summary>
+        public void Error(string message)
+            => throw new Exception(message);
 
         /// <summary>
         /// Increase the indent

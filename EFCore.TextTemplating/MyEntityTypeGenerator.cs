@@ -17,7 +17,7 @@ namespace EFCore.TextTemplating
     /// Class to produce the template output
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "16.0.0.0")]
-    internal partial class MyEntityTypeGenerator : MyCodeGeneratorBase
+    internal partial class MyEntityTypeGenerator : EFCore.TextTemplating.MyCodeGeneratorBase
     {
         /// <summary>
         /// Create the template output

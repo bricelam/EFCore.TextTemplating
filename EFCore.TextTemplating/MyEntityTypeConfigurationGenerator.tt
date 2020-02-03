@@ -1,4 +1,4 @@
-﻿<#@ template inherits="MyCodeGeneratorBase" visibility="internal" linePragmas="false" #>
+﻿<#@ template inherits="EFCore.TextTemplating.MyCodeGeneratorBase" visibility="internal" linePragmas="false" #>
 <#@ parameter name="EntityType" type="Microsoft.EntityFrameworkCore.Metadata.IEntityType" #>
 <#@ parameter name="ModelNamespace" type="System.String" #>
 <#@ parameter name="Namespace" type="System.String" #>
