@@ -1,0 +1,212 @@
+﻿<#@ template inherits="EFCore.TextTemplating.CodeGeneratorBase" visibility="internal" linePragmas="false" #>
+<#@ parameter name="EntityType" type="Microsoft.EntityFrameworkCore.Metadata.IEntityType" #>
+<#@ parameter name="ModelNamespace" type="System.String" #>
+<#@ parameter name="UseDataAnnotations" type="System.Boolean" #>
+<#@ parameter name="Code" type="Microsoft.EntityFrameworkCore.Design.ICSharpHelper" #>
+<#@ parameter name="EntityName" type="System.String" #>
+<#@ parameter name="EntityClassName" type="System.String" #>
+<#@ parameter name="GetEntityName" type="System.Func<Microsoft.EntityFrameworkCore.Metadata.IEntityType, System.String>" #>
+<#@ parameter name="GetEntityClassName" type="System.Func<Microsoft.EntityFrameworkCore.Metadata.IEntityType, System.String>" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore" #>
+<#@ import namespace="EFCore.TextTemplating.Addition" #>
+namespace <#= ModelNamespace #>
+{
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+<#
+        var usingNamespaceEndIndex = GenerationEnvironment.Length;
+#>
+
+<#
+        var entityTypeComment = EntityType.GetComment();
+        var hasEntityClassInfo = EntityClassInfo.TryGetInfo(ref entityTypeComment, out var entityClassInfo);
+        if (entityTypeComment != null)
+        {
+#>
+    /// <summary>
+    /// <#= entityTypeComment #>
+    /// </summary>
+    [Serializable]
+    [Description(@"<#= entityTypeComment.Replace("\"","\"\"") #>")]
+<#
+        }
+    if(UseDataAnnotations)
+    {
+        var schema = EntityType.GetSchema();
+        var scaffoldSchema = schema != null && schema != EntityType.Model.GetDefaultSchema();
+
+        var tableName = EntityType.GetTableName();
+        var isView = EntityType.FindAnnotation("Relational:ViewDefinition") != null;
+        var scaffoldTable = scaffoldSchema || isView || tableName != (string)EntityType["Scaffolding:DbSetName"];
+        if(!isView)
+        {
+#>
+    [Table(<#= scaffoldSchema ? Code.Literal(schema) + ", " : string.Empty #><#= Code.Literal(tableName) #>)]
+<#
+        }
+    }
+#>
+    public partial class <#= EntityClassName #>
+    {
+<#
+    var usingNamespaceSet = new HashSet<string>();
+    if(hasEntityClassInfo && entityClassInfo.UsingNamespaces?.Any() == true)
+    {
+        foreach (var usingNamespace in entityClassInfo.UsingNamespaces)
+        {
+            usingNamespaceSet.Add(usingNamespace);
+        }
+    }
+
+    foreach (var property in EntityType.GetProperties().OrderBy(p => p["Scaffolding:ColumnOrdinal"]))
+    {
+        var propertyComment = property.GetComment();
+        var hasEntityPropertyInfo = EntityPropertyInfo.TryGetInfo(ref propertyComment, out var entityPropertyInfo);
+        usingNamespaceSet.Add(entityPropertyInfo?.Enum?.UsingNamespace);
+        if (propertyComment != null)
+        {
+#>
+        /// <summary>
+        /// <#= propertyComment #>
+        /// </summary>
+        [Description(@"<#= propertyComment.Replace("\"","\"\"") #>")]
+<#
+        }
+    if(UseDataAnnotations)
+    {
+        if(property.IsPrimaryKey())
+        {
+#>
+        [Key]
+<#
+        }
+        var columnProperties = new List<string>();
+        var columnName = property.GetColumnName();
+        if (columnName != property.Name)
+        {
+            columnProperties.Add($"{Code.Literal(columnName)}");
+        }
+        var columnType = (string)property["Relational:ColumnType"];
+        if (columnType != null)
+        {
+            columnProperties.Add($"TypeName = {Code.Literal(columnType)}");
+        }
+        if(columnProperties.Any())
+        {
+#>
+        [Column(<#= string.Join(", ", columnProperties) #>)]
+<#
+        }
+    }
+        var propertyClrType = property.ClrType;
+        var isNullableType = propertyClrType.IsGenericType && propertyClrType.GetGenericTypeDefinition() == typeof(Nullable<>);
+        if (!property.IsNullable
+            && (!property.ClrType.IsValueType || isNullableType)
+            && !property.IsPrimaryKey())
+        {
+#>
+        [Required]
+<#
+        }
+
+        var maxLength = property.GetMaxLength();
+        if (maxLength.HasValue)
+        {
+            if (property.ClrType == typeof(string))
+            {
+#>
+        [StringLength(<#= Code.Literal(maxLength.Value) #>)]
+<#
+            }
+            else
+            {
+#>
+        [MaxLength(<#= Code.Literal(maxLength.Value) #>)]
+<#
+            }
+        }
+
+        if (hasEntityPropertyInfo && entityPropertyInfo?.Attributes?.Any() == true)
+        {
+            foreach (var attribute in entityPropertyInfo.Attributes)
+            {
+                usingNamespaceSet.Add(attribute.UsingNamespace);
+#>
+        [<#= attribute.Code #>]
+<#
+            }
+        }
+
+        var ignoreNullableType = isNullableType ? propertyClrType.GetGenericArguments()[0] : propertyClrType;
+        if(ignoreNullableType == typeof(DateTime))
+        {
+            ignoreNullableType = typeof(DateTimeOffset);
+            propertyClrType = isNullableType ? typeof(DateTimeOffset?) : typeof(DateTimeOffset);
+        }
+        var propertyClrTypeName = hasEntityPropertyInfo && entityPropertyInfo?.Enum != null
+            ? isNullableType
+                ? string.Concat(entityPropertyInfo.Enum.Name, "?")
+                : entityPropertyInfo.Enum.Name
+            : Code.Reference(propertyClrType);
+#>
+        public <#= propertyClrTypeName #> <#= property.Name #> { get; set; }
+
+<#
+    }
+
+    if(usingNamespaceSet.Any())
+    {
+        foreach (var usingNamespace in usingNamespaceSet)
+        {
+            if(string.IsNullOrWhiteSpace(usingNamespace))
+            {
+                continue;
+            }
+            var value = usingNamespace;
+            var prefix = "using ";
+            var thus = "    ";
+            if (!value.Trim().StartsWith(prefix))
+            {
+                value = string.Concat(thus, prefix, value);
+            }
+
+            var suffix = ";";
+            if (!value.Trim().EndsWith(suffix))
+            {
+                value = string.Concat(value, suffix);
+            }
+            value += "\r\n";
+
+            GenerationEnvironment.Insert(usingNamespaceEndIndex, value);
+            usingNamespaceEndIndex += value.Length;
+        }
+    }
+
+    foreach (var navigation in EntityType.GetNavigations())
+    {
+        var targetType = navigation.GetTargetType();
+        var targetTypeName = GetEntityClassName(targetType);
+
+        if (navigation.IsCollection())
+        {
+#>
+        public virtual ICollection<<#= targetTypeName #>> <#= navigation.Name #> { get; } = new HashSet<<#= targetTypeName #>>();
+
+<#
+        }
+        else
+        {
+#>
+        public virtual <#= targetTypeName #> <#= navigation.Name #> { get; set; }
+
+<#
+        }
+    }
+#>
+    }
+}

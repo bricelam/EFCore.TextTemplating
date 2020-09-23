@@ -1,0 +1,89 @@
+﻿<#@ template inherits="EFCore.TextTemplating.CodeGeneratorBase" visibility="internal" linePragmas="false" #>
+<#@ parameter name="EntityEnumInfo" type="System.ValueTuple<EFCore.TextTemplating.Addition.EntityEnumInfo, Microsoft.EntityFrameworkCore.Metadata.IProperty>" #>
+<#@ parameter name="ModelNamespace" type="System.String" #>
+<#@ parameter name="Code" type="Microsoft.EntityFrameworkCore.Design.ICSharpHelper" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore" #>
+namespace <#= ModelNamespace #>
+{
+    using System.ComponentModel;
+
+<#
+        var enumInfo = EntityEnumInfo.Item1;
+        var names = enumInfo.Name.Split('.');
+        if (names.Length > 1)
+        {
+            foreach (var name in names.Take(names.Length - 1))
+            {
+#>
+
+    /// <summary>
+    /// <#= name #>
+    /// </summary>
+    public partial static class <#= name #>
+    {
+<#
+            }
+        }
+        var entityEnumTypeComment = enumInfo.Comment;
+        if (entityEnumTypeComment != null)
+        {
+#>
+
+    /// <summary>
+    /// <#= entityEnumTypeComment #>
+    /// </summary>
+    [Description(@"<#= entityEnumTypeComment.Replace("\"","\"\"") #>")]
+<#
+        }
+
+        if(enumInfo.HasFlags)
+        {
+#>
+    [Flags]
+<#
+        }
+        var enumTypeName = names.Last();
+        var propertyClrType = EntityEnumInfo.Item2.ClrType;
+        var isNullableType = propertyClrType.IsGenericType && propertyClrType.GetGenericTypeDefinition() == typeof(Nullable<>);
+        var ignoreNullableType = isNullableType ? propertyClrType.GetGenericArguments()[0] : propertyClrType;
+        var isInherit = ignoreNullableType == typeof(int) && ignoreNullableType != typeof(string);
+#>
+    public enum <#= enumTypeName #><#= isInherit ? string.Empty : " : " + Code.Reference(ignoreNullableType) #>
+    {
+<#
+    foreach (var entityEnumValueInfo in enumInfo.Values)
+    {
+        var entityEnumValueComment = entityEnumValueInfo.Comment;
+        if (entityEnumValueComment != null)
+        {
+#>
+        /// <summary>
+        /// <#= entityEnumValueComment #>
+        /// </summary>
+        [Description(@"<#= entityEnumValueComment.Replace("\"","\"\"") #>")]
+<#
+        }
+        var value = entityEnumValueInfo.Name;
+        if(entityEnumValueInfo.Value != null)
+        {
+            value = string.Join(" = ", value, entityEnumValueInfo.Value);
+        }
+#>
+        <#= value #>,
+<#
+    }
+#>
+    }
+<#
+        if (names.Length > 1)
+        {
+            for (int i = 0; i < names.Length - 1; i++)
+            {
+#>
+    }
+<#
+            }
+        }
+#>
+}
