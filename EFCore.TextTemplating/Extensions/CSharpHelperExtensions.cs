@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore.Metadata;
-
+﻿// ReSharper disable once CheckNamespace
 namespace Microsoft.EntityFrameworkCore.Design
 {
-    static class CSharpHelperExtensions
+    using Metadata;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    internal static class CSharpHelperExtensions
     {
         /// <summary>
         /// Generates a property accessor lambda.

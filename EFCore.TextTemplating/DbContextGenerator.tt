@@ -1,0 +1,84 @@
+﻿<#@ template inherits="EFCore.TextTemplating.CodeGeneratorBase" visibility="internal" linePragmas="false" #>
+<#@ parameter name="Model" type="Microsoft.EntityFrameworkCore.Metadata.IModel" #>
+<#@ parameter name="ContextNamespace" type="System.String" #>
+<#@ parameter name="ModelNamespace" type="System.String" #>
+<#@ parameter name="ContextName" type="System.String" #>
+<#@ parameter name="ConnectionString" type="System.String" #>
+<#@ parameter name="SuppressConnectionStringWarning" type="System.Boolean" #>
+<#@ parameter name="UseDataAnnotations" type="System.Boolean" #>
+<#@ parameter name="Code" type="Microsoft.EntityFrameworkCore.Design.ICSharpHelper" #>
+<#@ parameter name="ProviderCode" type="Microsoft.EntityFrameworkCore.Scaffolding.IProviderConfigurationCodeGenerator" #>
+<#@ parameter name="AnnotationCode" type="Microsoft.EntityFrameworkCore.Design.IAnnotationCodeGenerator" #>
+<#@ parameter name="ConfigurationContextFolder" type="System.String" #>
+<#@ parameter name="GetEntityName" type="System.Func<Microsoft.EntityFrameworkCore.Metadata.IEntityType, System.String>" #>
+<#@ parameter name="GetEntityClassName" type="System.Func<Microsoft.EntityFrameworkCore.Metadata.IEntityType, System.String>" #>
+<#@ parameter name="GetEntityConfigurationName" type="System.Func<Microsoft.EntityFrameworkCore.Metadata.IEntityType, System.String>" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore.Scaffolding" #>
+namespace <#= ContextNamespace #>
+{
+    using <#= ConfigurationContextFolder #>;
+    using Microsoft.EntityFrameworkCore;
+
+    /// <summary>
+    /// <#= ContextName #>
+    /// </summary>
+    /// <inheritdoc />
+    public partial class <#= ContextName #> : DbContext
+    {
+        /// <inheritdoc />
+        protected <#= ContextName #>()
+        {
+        }
+
+        /// <inheritdoc />
+        public <#= ContextName #>(DbContextOptions<<#= ContextName #>> options)
+            : base(options)
+        {
+        }
+
+<#
+    foreach (var entityType in Model.GetEntityTypes())
+    {
+        var tableName = entityType.GetTableName();
+        var isView = entityType.FindAnnotation("Relational:ViewDefinition") != null;
+#>
+        /// <summary>
+        /// <#= entityType.Name #><#= isView ? string.Empty : ("(" + tableName+ ")") #>
+        /// </summary>
+        public virtual DbSet<<#= GetEntityClassName(entityType) #>> <#= GetEntityName(entityType) #> { get; set; }
+
+<#
+    }
+
+#>
+        /// <inheritdoc />
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#if DEBUG
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder<#= Code.Fragment(ProviderCode.GenerateUseProvider(ConnectionString)) #>;
+#endif
+            }
+        }
+
+        /// <inheritdoc />
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+<#
+    foreach (var entityType in Model.GetEntityTypes())
+    {
+#>
+            modelBuilder.ApplyConfiguration(new <#= GetEntityConfigurationName(entityType) #>());
+<#
+    }
+#>
+
+            OnModelCreatingPartial(modelBuilder);
+        }
+
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    }
+}

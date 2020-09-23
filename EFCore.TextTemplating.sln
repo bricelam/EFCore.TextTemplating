@@ -3,13 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28516.95
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChinookApp", "ChinookApp\ChinookApp.csproj", "{A0199902-2017-449B-8108-DC62DD6C94EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChinookApp", "ChinookApp\ChinookApp.csproj", "{A0199902-2017-449B-8108-DC62DD6C94EE}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ChinookDatabase", "ChinookDatabase\ChinookDatabase.sqlproj", "{CCDDCD07-72D2-452C-B0E7-56DB5A12F1EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFCore.TextTemplating", "EFCore.TextTemplating\EFCore.TextTemplating.csproj", "{F7C9926C-3A4A-4029-8127-CE42E478BCC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore.TextTemplating", "EFCore.TextTemplating\EFCore.TextTemplating.csproj", "{F7C9926C-3A4A-4029-8127-CE42E478BCC3}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "build", "build\build.shproj", "{6ED350EC-8375-4E47-9492-2BB75D7D9C3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Organization.Chinook.Table", "Organization.Chinook.Table\Organization.Chinook.Table.csproj", "{96C63668-9AFA-4CC4-A025-F25CC822CD21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Organization.Chinook.Repository", "Organization.Chinook.Repository\Organization.Chinook.Repository.csproj", "{0786157C-C606-4C2B-8D7F-FFD6786056AE}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		build\build.projitems*{6ed350ec-8375-4e47-9492-2bb75d7d9c3b}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -29,6 +38,14 @@ Global
 		{F7C9926C-3A4A-4029-8127-CE42E478BCC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7C9926C-3A4A-4029-8127-CE42E478BCC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7C9926C-3A4A-4029-8127-CE42E478BCC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96C63668-9AFA-4CC4-A025-F25CC822CD21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96C63668-9AFA-4CC4-A025-F25CC822CD21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96C63668-9AFA-4CC4-A025-F25CC822CD21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96C63668-9AFA-4CC4-A025-F25CC822CD21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0786157C-C606-4C2B-8D7F-FFD6786056AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0786157C-C606-4C2B-8D7F-FFD6786056AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0786157C-C606-4C2B-8D7F-FFD6786056AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0786157C-C606-4C2B-8D7F-FFD6786056AE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Design;
-
+﻿// ReSharper disable once CheckNamespace
 namespace Microsoft.EntityFrameworkCore.Scaffolding
 {
-    static class ProviderConfigurationCodeGeneratorExtensions
+    using Design;
+
+    internal static class ProviderConfigurationCodeGeneratorExtensions
     {
         /// <summary>
         /// Generates a code fragment like .UseSqlServer("Database=Foo") which can be used in

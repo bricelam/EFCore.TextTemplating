@@ -1,0 +1,339 @@
+﻿<#@ template inherits="EFCore.TextTemplating.CodeGeneratorBase" visibility="internal" linePragmas="false" #>
+<#@ parameter name="EntityType" type="Microsoft.EntityFrameworkCore.Metadata.IEntityType" #>
+<#@ parameter name="ContextNamespace" type="System.String" #>
+<#@ parameter name="ModelNamespace" type="System.String" #>
+<#@ parameter name="UseDataAnnotations" type="System.Boolean" #>
+<#@ parameter name="Code" type="Microsoft.EntityFrameworkCore.Design.ICSharpHelper" #>
+<#@ parameter name="AnnotationCode" type="Microsoft.EntityFrameworkCore.Design.IAnnotationCodeGenerator" #>
+<#@ parameter name="ConfigurationNamespace" type="System.String" #>
+<#@ parameter name="EntityName" type="System.String" #>
+<#@ parameter name="EntityClassName" type="System.String" #>
+<#@ parameter name="EntityConfigurationName" type="System.String" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore.Design" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore.Metadata" #>
+<#@ import namespace="Microsoft.EntityFrameworkCore.Metadata.Conventions" #>
+<#@ import namespace="EFCore.TextTemplating.Addition" #>
+namespace <#= ConfigurationNamespace #>
+{
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+    using <#= ModelNamespace #>;
+<#
+        var usingNamespaceEndIndex = GenerationEnvironment.Length;
+#>
+
+<#
+        var entityTypeComment = EntityType.GetComment();
+        var originalEntityTypeComment = entityTypeComment?.ToString();
+        var hasEntityClassInfo = EntityClassInfo.TryGetInfo(ref entityTypeComment, out var entityClassInfo);
+        if (entityTypeComment != null)
+        {
+#>
+    /// <summary>
+    /// <#= entityTypeComment #> Configuration
+    /// </summary>
+<#
+        }
+#>
+    public partial class <#= EntityConfigurationName #> : IEntityTypeConfiguration<<#= EntityClassName #>>
+    {
+        /// <summary>
+        /// Configure
+        /// </summary>
+        public void Configure(EntityTypeBuilder<<#= EntityClassName #>> builder)
+        {
+<#
+    var primaryKey = EntityType.FindPrimaryKey();
+    if (primaryKey == null)
+    {
+#>
+            builder.HasNoKey();
+
+<#
+    }
+    else if (!Enumerable.SequenceEqual(
+        primaryKey.Properties,
+        KeyDiscoveryConvention.DiscoverKeyProperties(
+            (IConventionEntityType)primaryKey.DeclaringEntityType,
+            primaryKey.DeclaringEntityType.GetProperties().Cast<IConventionProperty>())))
+    {
+#>
+            builder.HasKey(<#= Code.Lambda(primaryKey.Properties) #>)
+                .HasName("PRIMARY");
+
+<#
+    }
+    if(!UseDataAnnotations)
+    {
+        var schema = EntityType.GetSchema();
+        var scaffoldSchema = schema != null && schema != EntityType.Model.GetDefaultSchema();
+
+        var tableName = EntityType.GetTableName();
+        var isView = EntityType.FindAnnotation("Relational:ViewDefinition") != null;
+        var scaffoldTable = scaffoldSchema || isView || tableName != (string)EntityType["Scaffolding:DbSetName"];
+
+        if (scaffoldTable)
+        {
+#>
+            builder.<#= isView ? "ToView" : "ToTable" #>(<#= scaffoldSchema ? Code.Literal(schema) + ", " : string.Empty #><#= Code.Literal(tableName) #>);
+
+<#
+        }
+    }
+    if (originalEntityTypeComment != null)
+    {
+#>
+            builder.HasComment(@"<#= originalEntityTypeComment.Replace("\"","\"\"") #>");
+
+<#
+    }
+
+    foreach (var index in EntityType.GetIndexes())
+    {
+#>
+            builder.HasIndex(<#= Code.Lambda(index.Properties) #>)
+<#
+        if(index.IsUnique)
+        {
+#>
+                .IsUnique()
+<#
+        }
+#>
+                .HasName("<#= index.GetName() #>");
+
+<#
+    }
+    
+    var usingNamespaceSet = new HashSet<string>();
+    foreach (var property in EntityType.GetProperties())
+    {
+        var originalGenerationEnvironment = GenerationEnvironment;
+        GenerationEnvironment = new StringBuilder();
+
+        var propertyComment = property.GetComment();
+        var originalPropertyComment = propertyComment?.ToString();
+        var hasEntityPropertyInfo = EntityPropertyInfo.TryGetInfo(ref propertyComment, out var entityPropertyInfo);
+        
+        var columnName = property.GetColumnName();
+    if(!UseDataAnnotations)
+    {
+        if (columnName != property.Name)
+        {
+#>
+                .HasColumnName(<#= Code.Literal(columnName) #>)
+<#
+        }
+
+        var columnType = (string)property["Relational:ColumnType"];
+        if (columnType != null)
+        {
+#>
+                .HasColumnType(<#= Code.Literal(columnType) #>)
+<#
+        }
+
+        if (hasEntityPropertyInfo && entityPropertyInfo.Attributes?.Any() == true)
+        {
+            if (entityPropertyInfo.Attributes.Any(item => item.Code == "DatabaseGenerated(DatabaseGeneratedOption.Identity)"))
+            {
+#>
+                .ValueGeneratedOnAdd()
+<#                
+            }
+            if (entityPropertyInfo.Attributes.Any(item => item.Code == "DatabaseGenerated(DatabaseGeneratedOption.Computed)"))
+            {
+#>
+                .ValueGeneratedOnAddOrUpdate()
+<#                
+            }
+            if (entityPropertyInfo.Attributes.Any(item => item.Code == "DatabaseGenerated(DatabaseGeneratedOption.None)"))
+            {
+#>
+                .ValueGeneratedNever()
+<#                
+            }
+        }
+    }
+
+        if (property.IsUnicode() == false)
+        {
+#>
+                .IsUnicode(false)
+<#
+        }
+
+        if (property.IsFixedLength() == true)
+        {
+#>
+                .IsFixedLength()
+<#
+        }
+        
+        var propertyDefaultValue = property.GetDefaultValue();
+        if (propertyDefaultValue != null)
+        {
+#>
+                .HasDefaultValue(<#= propertyDefaultValue #>)
+<#
+        }
+
+        var propertyDefaultValueSql = property.GetDefaultValueSql();
+        if(propertyDefaultValueSql != null)
+        {
+#>
+                .HasDefaultValueSql(<#= Code.Literal(propertyDefaultValueSql) #>)
+<#
+        }
+
+        var propertyComputedColumnSql = property.GetComputedColumnSql();
+        if (propertyComputedColumnSql != null)
+        {
+#>
+                .HasComputedColumnSql(<#= Code.Literal(propertyComputedColumnSql) #>)
+<#
+        }
+
+        var valueGenerated = property.ValueGenerated;
+        var isRowVersion = false;
+        if (((IConventionProperty)property).GetValueGeneratedConfigurationSource().HasValue
+            && valueGenerated != RelationalValueGenerationConvention.GetValueGenerated(property))
+        {
+            if (valueGenerated == ValueGenerated.OnAddOrUpdate
+                && property.IsConcurrencyToken)
+            {
+                isRowVersion = true;
+#>
+                .IsRowVersion()
+<#
+            }
+            else
+            {
+#>
+                .ValueGenerated<#= valueGenerated #>()
+<#
+            }
+        }
+
+        if (property.IsConcurrencyToken && !isRowVersion)
+        {
+#>
+                .IsConcurrencyToken()
+<#
+        }
+
+        if(hasEntityPropertyInfo && entityPropertyInfo?.Enum != null)
+        {
+            usingNamespaceSet.Add(entityPropertyInfo.Enum.UsingNamespace);
+            //https://docs.microsoft.com/zh-cn/ef/core/modeling/value-conversions
+
+            var propertyClrType = property.ClrType;
+            var isNullableType = propertyClrType.IsGenericType && propertyClrType.GetGenericTypeDefinition() == typeof(Nullable<>);
+            var ignoreNullableType = isNullableType ? propertyClrType.GetGenericArguments()[0] : propertyClrType;
+            if(ignoreNullableType == typeof(string))
+            {
+#>
+                .HasConversion(new EnumToStringConverter<<#= entityPropertyInfo.Enum.Name #>>())
+<#
+            }
+            else
+            {
+#>
+                .HasConversion(new EnumToNumberConverter<<#= entityPropertyInfo.Enum.Name #>, <#= Code.Reference(ignoreNullableType) #>>())
+<#
+            }
+        }
+
+        if (originalPropertyComment != null)
+        {
+#>
+                .HasComment(@"<#= originalPropertyComment.Replace("\"","\"\"") #>")
+<#
+        }
+
+        var propertyConfiguration = GenerationEnvironment.ToString();
+        GenerationEnvironment = originalGenerationEnvironment;
+
+        if (propertyConfiguration.Length != 0)
+        {
+#>
+            builder.Property(e => e.<#= property.Name #>)
+                <#= propertyConfiguration.Trim() #>;
+
+<#
+        }
+    }
+
+    if(usingNamespaceSet.Any())
+    {
+        foreach (var usingNamespace in usingNamespaceSet)
+        {
+            if(string.IsNullOrWhiteSpace(usingNamespace))
+            {
+                continue;
+            }
+            var value = usingNamespace;
+            var prefix = "using ";
+            var thus = "    ";
+            if (!value.Trim().StartsWith(prefix))
+            {
+                value = string.Concat(thus, prefix, value);
+            }
+
+            var suffix = ";";
+            if (!value.Trim().EndsWith(suffix))
+            {
+                value = string.Concat(value, suffix);
+            }
+            value += "\r\n";
+
+            GenerationEnvironment.Insert(usingNamespaceEndIndex, value);
+            usingNamespaceEndIndex += value.Length;
+        }
+    }
+
+    foreach (var foreignKey in EntityType.GetForeignKeys())
+    {
+        var originalGenerationEnvironment = GenerationEnvironment;
+        GenerationEnvironment = new StringBuilder();
+
+        if (!foreignKey.PrincipalKey.IsPrimaryKey())
+        {
+#>
+                .HasPrincipalKey<#= foreignKey.IsUnique ? "<" + foreignKey.PrincipalEntityType.Name + ">" : string.Empty #>(<#= Code.Lambda(foreignKey.PrincipalKey.Properties) #>)
+<#
+        }
+
+#>
+                .HasForeignKey<#= foreignKey.IsUnique ? "<" + foreignKey.DeclaringEntityType.Name + ">" : string.Empty #>(<#= Code.Lambda(foreignKey.Properties) #>)
+<#
+
+        var defaultDeleteBehavior = foreignKey.IsRequired ? DeleteBehavior.Cascade : DeleteBehavior.ClientSetNull;
+        if (foreignKey.DeleteBehavior != defaultDeleteBehavior)
+        {
+#>
+                .OnDelete(<#= Code.Literal(foreignKey.DeleteBehavior) #>)
+<#
+        }
+
+        var relationshipConfiguration = GenerationEnvironment.ToString();
+        GenerationEnvironment = originalGenerationEnvironment;
+
+#>
+            builder.HasOne(<#= foreignKey.DependentToPrincipal != null ? "d => d." + foreignKey.DependentToPrincipal.Name : string.Empty #>).<#= foreignKey.IsUnique ? "WithOne" : "WithMany" #>(<#= foreignKey.PrincipalToDependent != null ? "p => p." + foreignKey.PrincipalToDependent.Name : "" #>)
+                <#= relationshipConfiguration.Trim() #>;
+
+<#
+    }
+#>
+            ConfigurePartial(builder);
+        }
+
+        partial void ConfigurePartial(EntityTypeBuilder<<#= EntityClassName #>> builder);
+    }
+}

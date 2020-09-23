@@ -72,5 +72,6 @@
     <Build Include="Tables\PlaylistTrack.sql" />
     <Build Include="Tables\Track.sql" />
     <PostDeploy Include="PostDeploymentScripts\Script.PostDeployment1.sql" />
+    <Build Include="Tables\Enum.sql" />
   </ItemGroup>
 </Project>
