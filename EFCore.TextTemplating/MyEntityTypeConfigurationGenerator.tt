@@ -33,8 +33,9 @@ namespace <#= Namespace #>
     else if (!Enumerable.SequenceEqual(
         primaryKey.Properties,
         KeyDiscoveryConvention.DiscoverKeyProperties(
-            (IConventionEntityType)primaryKey.DeclaringEntityType,
-            primaryKey.DeclaringEntityType.GetProperties().Cast<IConventionProperty>())))
+                (IConventionEntityType)primaryKey.DeclaringEntityType,
+                primaryKey.DeclaringEntityType.GetProperties().Cast<IConventionProperty>())
+            .Cast<IProperty>()))
     {
 #>
             builder.HasKey(<#= Code.Lambda(primaryKey.Properties) #>);
