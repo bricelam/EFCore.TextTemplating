@@ -1,3 +1,5 @@
+**⛔ This repository has been archived!** Official support has been added in EF7. See [Custom Reverse Engineering Templates](https://learn.microsoft.com/ef/core/managing-schemas/scaffolding/templates) in the EF docs.
+
 # EFCore.TextTemplating
 
 This sample shows how to use T4 templates to scaffold code when reverse engineering a model from a database using EF Core.
